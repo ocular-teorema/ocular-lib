@@ -21,6 +21,20 @@ public interface LibraryService {
     boolean resetServer();
 
     /**
+     * Подключение к очереди
+     * @param address адрес
+     * @param port порт
+     * @return статус успех (true) или неудача (false)
+     */
+    boolean connect(String address, int port);
+
+    /**
+     * Отключение от очереди
+     * @return статус успех (true) или неудача (false)
+     */
+    boolean disconnect();
+
+    /**
      * Добавляет новую камеру
      * @param camera камера
      * @return статус успех (true) или неудача (false)
@@ -45,7 +59,7 @@ public interface LibraryService {
      * Переключает режим записи камеры.
      * @param camera Камера
      * @param isRecording включена true или выключена false
-     * @return ружим успешно изменен (true) или неудача (false)
+     * @return режим успешно изменен (true) или неудача (false)
      */
     boolean setRecording(Camera camera, boolean isRecording);
 }
