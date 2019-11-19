@@ -1,4 +1,4 @@
-package ru.ddg.ocular.lib.interfaces.facades.contracts;
+package ru.ddg.ocular.lib.interfaces.facades.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

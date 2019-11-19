@@ -1,7 +1,8 @@
 package ru.ddg.ocular.lib.interfaces.services;
 
-import ru.ddg.ocular.lib.interfaces.facades.contracts.Camera;
+import ru.ddg.ocular.lib.interfaces.facades.model.Camera;
 import ru.ddg.ocular.lib.interfaces.facades.contracts.ServerState;
+import ru.ddg.ocular.lib.interfaces.facades.model.Connection;
 
 import java.util.List;
 
@@ -9,44 +10,49 @@ public interface LibraryService {
 
     /**
      * Возвращает информацию о сервере
+     * @param address адрес сервера
+     * @param port порт
      * @return информация о сервере
      * @see ServerState;
      */
-    ServerState getServerState();
+    ServerState getServerState(String address, int port);
 
     /**
      * Отправляет команду 'reset' на сервер ocular
-     * @return статус успех (true) или неудача (false)
+     * @throws Exception
      */
-    boolean resetServer();
+    void resetServer() throws Exception;
 
     /**
      * Подключение к очереди
-     * @param address адрес
+     * @param address адрес сервера
      * @param port порт
-     * @return статус успех (true) или неудача (false)
+     * @return объект соединения
+     * @throws Exception ошибка подключения
      */
-    boolean connect(String address, int port);
+    Connection connect(String address, int port) throws Exception;
 
     /**
      * Отключение от очереди
-     * @return статус успех (true) или неудача (false)
+     * @throws Exception ошибка отключения
      */
-    boolean disconnect();
+    void disconnect() throws Exception;
 
     /**
      * Добавляет новую камеру
      * @param camera камера
-     * @return статус успех (true) или неудача (false)
+     * @throws Exception ошибка добавления камеры
      */
-    boolean addCamera(Camera camera);
+    void addCamera(Camera camera) throws Exception;
 
     /**
      * Удаляет существующую камеру
-     * @param camera камера
-     * @return статус успех (true) или неудача (false)
+     * @param cameraId идентификатор камеры
+     * @param address адрес сервера
+     * @param port порт
+     * @throws Exception ошибка удаления камеры
      */
-    boolean removeCamera(Camera camera);
+    void removeCamera(long cameraId, String address, int port) throws Exception;
 
     /**
      * Возвращает список камер
@@ -59,7 +65,7 @@ public interface LibraryService {
      * Переключает режим записи камеры.
      * @param camera Камера
      * @param isRecording включена true или выключена false
-     * @return режим успешно изменен (true) или неудача (false)
+     * @throws Exception ошибка переключения режима записи
      */
-    boolean setRecording(Camera camera, boolean isRecording);
+    void setRecording(Camera camera, boolean isRecording) throws Exception;
 }
