@@ -26,5 +26,5 @@ public class ServerState {
 
     Integer discUsage;
 
-    String videoDirectory;
+    String defaultArchivePath;
 }
