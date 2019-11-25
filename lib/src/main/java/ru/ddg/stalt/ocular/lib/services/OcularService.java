@@ -1,16 +1,16 @@
-package ru.ddg.ocular.lib.interfaces.services;
+package ru.ddg.stalt.ocular.lib.services;
 
-import ru.ddg.ocular.lib.interfaces.facades.model.Organization;
-import ru.ddg.ocular.lib.interfaces.facades.model.Schedule;
-import ru.ddg.ocular.lib.interfaces.facades.model.Camera;
-import ru.ddg.ocular.lib.interfaces.facades.contracts.ServerState;
-import ru.ddg.ocular.lib.interfaces.facades.model.Connection;
-import ru.ddg.ocular.lib.interfaces.facades.model.Record;
-import ru.ddg.ocular.lib.interfaces.facades.model.Storage;
+import ru.ddg.stalt.ocular.lib.facades.model.Organization;
+import ru.ddg.stalt.ocular.lib.facades.model.Schedule;
+import ru.ddg.stalt.ocular.lib.facades.model.Camera;
+import ru.ddg.stalt.ocular.lib.facades.model.ServerState;
+import ru.ddg.stalt.ocular.lib.facades.model.Connection;
+import ru.ddg.stalt.ocular.lib.facades.model.Record;
+import ru.ddg.stalt.ocular.lib.facades.model.Storage;
 
 import java.util.List;
 
-public interface LibraryService {
+public interface OcularService {
 
     /**
      * Подключение к очереди

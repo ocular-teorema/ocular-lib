@@ -1,4 +1,4 @@
-package ru.ddg.ocular.lib.interfaces.facades.contracts;
+package ru.ddg.stalt.ocular.lib.facades.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +27,4 @@ public class ServerState {
     Integer discUsage;
 
     String videoDirectory;
-
-    Integer requestUid;
 }
