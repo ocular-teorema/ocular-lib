@@ -2,38 +2,39 @@ package ru.ddg.stalt.ocular.lib.facades.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Данный объект содержит информацию о камере:
  * Идентификатор, имя, основной адрес (видеопоток с максимальным разрешением),
- * дополнительный адрес (опционально, видеопоток с меньшим разрешением), идентификатор хранилища,
+ * дополнительный адрес (опционально, видеопоток с меньшим разрешением), адрес видеопотока, идентификатор хранилища,
  * идентификатор расписания, тип анализа (1 - без анализа, 2 - только движение, 3 - полный анализ), статус,
  * статус записи (true - включена, false - выключена)
- * время хранения видео (дней), адрес архива.
+ * время хранения видео (дней).
  */
 @Getter
-@AllArgsConstructor
+@Setter
 public class Camera {
 
-    String cameraId;
+    private String cameraId;
 
-    String name;
+    private String name;
 
-    String primaryAddress;
+    private String primaryAddress;
 
-    String secondaryAddress;
+    private String secondaryAddress;
 
-    Integer storageId;
+    private String streamAddress;
 
-    Integer scheduleId;
+    private Integer storageId;
 
-    Integer analysisType;
+    private Integer scheduleId;
 
-    String status;
+    private Integer analysisType;
 
-    Boolean isRecording;
+    private CameraStatusEnum status;
 
-    Integer storageDays;
+    private Boolean isRecording;
 
-    String archivePath;
+    private Integer storageDays;
 }

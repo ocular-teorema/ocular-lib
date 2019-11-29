@@ -10,13 +10,13 @@ import lombok.Getter;
 @Getter
 public class Record {
 
-    int id;
+    private int id;
 
-    String cameraId;
+    private String cameraId;
 
-    Integer startTimestamp;
+    private Integer startTimestamp;
 
-    Integer endTimestamp;
+    private Integer endTimestamp;
 
-    Integer fileSize;
+    private Integer fileSize;
 }

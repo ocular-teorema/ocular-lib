@@ -1,30 +1,19 @@
 package ru.ddg.stalt.ocular.lib.facades.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 
 /**
  * Данный объект содержит информацию о сервере:
- * ip-адрес, версию ocular, время работы, среднюю загруженность, загрузку cpu и дисков,
- * директорию для видео по-умолчанию, уникальный идентификатор для отправки/приема.
+ * Информация об оборудовании, сервисах, список камер.
  */
 @Getter
-@AllArgsConstructor
 public class ServerState {
 
-    String ipAddress;
+    private ServerHardwareInfo hardwareInfo;
 
-    String ocularVersion;
+    private List<Service> services;
 
-    String uptime;
-
-    List<Double> loadAverage;
-
-    Integer cpuUtilization;
-
-    Integer discUsage;
-
-    String defaultArchivePath;
+    private List<Camera> cameras;
 }

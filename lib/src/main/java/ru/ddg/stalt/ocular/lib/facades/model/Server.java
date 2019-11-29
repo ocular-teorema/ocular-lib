@@ -11,13 +11,13 @@ import java.util.List;
 @Getter
 public class Server {
 
-    int id;
+    private int id;
 
-    String name;
+    private String name;
 
-    List<Camera> cameras;
+    private List<Camera> cameras;
 
-    List<Storage> storages;
+    private List<Storage> storages;
 
-    List<Schedule> schedules;
+    private List<Schedule> schedules;
 }

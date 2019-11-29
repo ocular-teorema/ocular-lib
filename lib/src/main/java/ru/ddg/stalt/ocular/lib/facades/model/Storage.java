@@ -1,17 +1,19 @@
 package ru.ddg.stalt.ocular.lib.facades.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Данный объект содержит информацию о хранилище:
- * идентификатор, имя, путь.
+ * идентификатор, имя, путь к архиву по-умоолчанию.
  */
 @Getter
+@Setter
 public class Storage {
 
-    int id;
+    private int id;
 
-    String name;
+    private String name;
 
-    String path;
+    private String defaultArchivePath;
 }

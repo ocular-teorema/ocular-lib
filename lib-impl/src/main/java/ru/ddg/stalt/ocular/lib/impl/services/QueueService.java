@@ -1,4 +1,4 @@
-package ru.ddg.ocular.lib.logic.services;
+package ru.ddg.stalt.ocular.lib.impl.services;
 
 public class QueueService {
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class Organization {
 
-    String name;
+    private String name;
 
-    List<Server> servers;
+    private List<Server> servers;
 }

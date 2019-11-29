@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.facades.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Данный объект содержит информацию о расписании:
@@ -8,9 +9,10 @@ import lombok.Getter;
  * тип расписания
  */
 @Getter
+@Setter
 public class Schedule {
 
-    int id;
+    private int id;
 
-    String type;
+    private String type;
 }
