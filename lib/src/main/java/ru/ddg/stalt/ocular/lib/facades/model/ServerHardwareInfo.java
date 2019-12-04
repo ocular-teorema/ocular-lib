@@ -24,5 +24,5 @@ public class ServerHardwareInfo {
 
     private Integer discUsage;
 
-    private String defaultArchivePath;
+    private String defaultVideoPath;
 }

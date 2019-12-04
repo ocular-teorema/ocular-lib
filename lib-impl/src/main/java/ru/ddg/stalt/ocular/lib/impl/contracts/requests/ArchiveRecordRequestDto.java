@@ -7,14 +7,15 @@ import lombok.Setter;
 import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
-public class ArchiveRecordRequestDto {
+public class ArchiveRecordRequestDto implements Request {
 
     @JsonProperty("request_uid")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer requestUid;
+    private UUID requestUid;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<CameraDto> cameras;

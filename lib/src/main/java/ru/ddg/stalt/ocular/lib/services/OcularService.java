@@ -1,12 +1,9 @@
 package ru.ddg.stalt.ocular.lib.services;
 
-import ru.ddg.stalt.ocular.lib.facades.model.Organization;
-import ru.ddg.stalt.ocular.lib.facades.model.Schedule;
-import ru.ddg.stalt.ocular.lib.facades.model.Camera;
-import ru.ddg.stalt.ocular.lib.facades.model.ServerState;
+import ru.ddg.stalt.ocular.lib.facades.exceptions.IncorrectServerNameException;
+import ru.ddg.stalt.ocular.lib.facades.exceptions.WrongConnectionException;
+import ru.ddg.stalt.ocular.lib.facades.model.*;
 import ru.ddg.stalt.ocular.lib.facades.model.Connection;
-import ru.ddg.stalt.ocular.lib.facades.model.Record;
-import ru.ddg.stalt.ocular.lib.facades.model.Storage;
 
 import java.util.List;
 
@@ -35,7 +32,7 @@ public interface OcularService {
      * @return информация о сервере
      * @see ServerState;
      */
-    ServerState getServerState(Connection connection, String serverName);
+    ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException;
 
     /**
      * Отправляет команду 'reset' на сервер ocular
