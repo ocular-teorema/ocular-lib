@@ -1,11 +1,13 @@
 package ru.ddg.stalt.ocular.lib.services;
 
+import com.rabbitmq.client.Connection;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.model.*;
-import ru.ddg.stalt.ocular.lib.model.Connection;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public interface OcularService {
 
@@ -14,16 +16,17 @@ public interface OcularService {
      * @param address адрес сервера
      * @param port порт
      * @return объект соединения
-     * @throws Exception ошибка подключения
+     * @throws IOException ошибка ввода-вывода
+     * @throws TimeoutException истекло время ожидания
      */
-    Connection connect(String address, int port) throws Exception;
+    Connection connect(String address, int port, String username, String password) throws IOException, TimeoutException;
 
     /**
      * Отключение от очереди
      * @param connection объект соединения
-     * @throws Exception ошибка отключения
+     * @throws IOException ошибка ввода-вывода
      */
-    void disconnect(Connection connection) throws Exception;
+    void disconnect(Connection connection) throws IOException;
 
     /**
      * Возвращает информацию о сервере
@@ -32,7 +35,7 @@ public interface OcularService {
      * @return информация о сервере
      * @see ServerState;
      */
-    ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException;
+    ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException;
 
     /**
      * Отправляет команду 'reset' на сервер ocular
@@ -40,7 +43,7 @@ public interface OcularService {
      * @param connection объект соединения
      * @throws Exception
      */
-    void resetServer(Connection connection, String serverName) throws Exception;
+    void resetServer(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Добавляет новую камеру
@@ -48,7 +51,7 @@ public interface OcularService {
      * @param connection объект соединения
      * @throws Exception ошибка добавления камеры
      */
-    void addCamera(Connection connection, Camera camera) throws Exception;
+    void addCamera(Connection connection, Camera camera, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Удаляет существующую камеру

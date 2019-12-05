@@ -1,73 +1,64 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
+import com.rabbitmq.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
+import ru.ddg.stalt.ocular.lib.impl.contracts.Response;
 import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.AddCameraRequest;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
-import ru.ddg.stalt.ocular.lib.impl.model.QueueConnection;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 public class OcularServiceImpl implements OcularService {
     @Autowired
     private QueueService queueService;
 
     @Override
-    public Connection connect(String address, int port) throws Exception {
+    public Connection connect(String address, int port, String username, String password) throws IOException, TimeoutException {
         // TODO
-        com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, null, null);
-        return new QueueConnection(connection, null);
+        return queueService.createConnection(address, port, username, password);
     }
 
     @Override
-    public void disconnect(Connection connection) throws Exception {
-        QueueConnection queueConnection = (QueueConnection)connection;
-        queueConnection.getChannel().close();
-        queueConnection.getConnection().close();
-
+    public void disconnect(Connection connection) throws IOException {
+        connection.close();
     }
 
     @Override
-    public ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException {
+    public ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException {
         checkConnection(connection);
         checkServerName(serverName);
 
-        if (serverName == null || serverName.isEmpty()) {
-            throw new IncorrectServerNameException("Wrong server name");
-        }
-        StringBuilder stringBuilder = new StringBuilder("ocular/");
-        stringBuilder.append(serverName);
-        stringBuilder.append("/status/request");
-        BaseRequest requestDto = new BaseRequest(UUID.randomUUID());
+        String server = serverName + "/status/request";
 
-        queueService.send(stringBuilder.toString(),requestDto);
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),server);
 
+        Response response = queueService.send(connection, baseRequest);
+        //TODO
         return null;
     }
 
     @Override
-    public void resetServer(Connection connection, String serverName) throws Exception {
+    public void resetServer(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
         checkConnection(connection);
         checkServerName(serverName);
-        StringBuilder stringBuilder = new StringBuilder("ocular/");
-        stringBuilder.append(serverName);
-        stringBuilder.append("/reset/request");
-        BaseRequest requestDto = new BaseRequest(UUID.randomUUID());
+        String server = serverName + "/reset/request/";
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server);
 
-        queueService.send(stringBuilder.toString(),requestDto);
+        queueService.send(connection,baseRequest);
     }
 
-    public void addCamera(Connection connection, Camera camera, String serverName) throws Exception {
+    public void addCamera(Connection connection, Camera camera, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
         checkConnection(connection);
         checkServerName(serverName);
-        StringBuilder stringBuilder = new StringBuilder("ocular/");
-        stringBuilder.append(serverName);
-        stringBuilder.append("/cameras/add/request");
+        String server = serverName + "/cameras/add/request";
 
         CameraDto cameraDto = new CameraDto();
         cameraDto.setCameraId(camera.getCameraId());
@@ -80,11 +71,10 @@ public class OcularServiceImpl implements OcularService {
         cameraDto.setStatus(camera.getStatus());
         cameraDto.setStorageId(camera.getStorageId());
 
-        AddCameraRequest addCameraRequest = new AddCameraRequest();
+        AddCameraRequest addCameraRequest = new AddCameraRequest(UUID.randomUUID(), server);
         addCameraRequest.setCamera(cameraDto);
-        addCameraRequest.setUuid(UUID.randomUUID());
 
-        queueService.send(stringBuilder.toString(),addCameraRequest);
+        queueService.send(connection, addCameraRequest);
 
     }
 
