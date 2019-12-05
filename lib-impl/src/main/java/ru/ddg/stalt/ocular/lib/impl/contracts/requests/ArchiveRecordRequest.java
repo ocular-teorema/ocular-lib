@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ArchiveRecordRequest extends BaseRequest {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<CameraDto> cameras;
+    private List<String> cameraIds;
 
     @JsonProperty("start_timestamp")
     @JsonInclude(JsonInclude.Include.NON_NULL)

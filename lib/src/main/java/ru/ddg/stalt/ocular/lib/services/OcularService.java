@@ -155,7 +155,7 @@ public interface OcularService {
             Integer stopTimestamp,
             List<String> cameras,
             Integer skip,
-            Integer limit);
+            Integer limit) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Возвращает список расписаний
@@ -163,7 +163,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список расписаний List<Schedule>
      */
-    List<Schedule> getScheduleList(Connection connection, String serverName);
+    List<Schedule> getScheduleList(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException;
 
     /**
      * Возвращает данные конфигурации
@@ -171,7 +171,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список организаций
      */
-    List<Organization> exportConfig(Connection connection, String serverName);
+    List<Organization> exportConfig(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Импортирует данные конфигурации
