@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
+import ru.ddg.stalt.ocular.lib.impl.contracts.OrganizationDto;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
-public class AddCameraRequestDto implements Request {
-    @JsonProperty("request_uid")
+public class ConfigImportRequest extends BaseRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID requestUid;
+    private List<OrganizationDto> organizations;
 
-    private CameraDto camera;
-
+    public ConfigImportRequest(UUID uuid) {
+        super(uuid);
+    }
 }

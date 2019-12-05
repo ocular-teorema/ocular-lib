@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class RecordingRequestDto implements Request {
+public class RecordingRequestDto extends BaseRequest {
 
     @JsonProperty("camera_id")
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,7 +19,7 @@ public class RecordingRequestDto implements Request {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isRecording;
 
-    @JsonProperty("request_uid")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID requestUid;
+    public RecordingRequestDto(UUID uuid) {
+        super(uuid);
+    }
 }

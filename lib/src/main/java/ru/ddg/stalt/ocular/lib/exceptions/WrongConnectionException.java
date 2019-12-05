@@ -1,4 +1,4 @@
-package ru.ddg.stalt.ocular.lib.facades.exceptions;
+package ru.ddg.stalt.ocular.lib.exceptions;
 
 public class WrongConnectionException extends BaseException {
     public WrongConnectionException(String message) {

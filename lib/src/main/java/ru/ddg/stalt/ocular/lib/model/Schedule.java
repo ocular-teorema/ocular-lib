@@ -1,4 +1,4 @@
-package ru.ddg.stalt.ocular.lib.facades.model;
+package ru.ddg.stalt.ocular.lib.model;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,9 @@
 package ru.ddg.stalt.ocular.lib.services;
 
-import ru.ddg.stalt.ocular.lib.facades.exceptions.IncorrectServerNameException;
-import ru.ddg.stalt.ocular.lib.facades.exceptions.WrongConnectionException;
-import ru.ddg.stalt.ocular.lib.facades.model.*;
-import ru.ddg.stalt.ocular.lib.facades.model.Connection;
+import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
+import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
+import ru.ddg.stalt.ocular.lib.model.*;
+import ru.ddg.stalt.ocular.lib.model.Connection;
 
 import java.util.List;
 

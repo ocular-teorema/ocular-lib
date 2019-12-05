@@ -11,11 +11,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ArchiveRecordRequestDto implements Request {
-
-    @JsonProperty("request_uid")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID requestUid;
+public class ArchiveRecordRequest extends BaseRequest {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<CameraDto> cameras;
@@ -31,4 +27,8 @@ public class ArchiveRecordRequestDto implements Request {
     private Integer skip;
 
     private Integer limit;
+
+    public ArchiveRecordRequest(UUID uuid) {
+        super(uuid);
+    }
 }

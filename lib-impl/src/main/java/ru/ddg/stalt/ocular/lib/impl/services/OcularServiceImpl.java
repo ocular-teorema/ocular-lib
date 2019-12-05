@@ -1,39 +1,27 @@
-package ru.ddg.stalt.ocular.lib.impl.services.impl;
+package ru.ddg.stalt.ocular.lib.impl.services;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ddg.stalt.ocular.lib.facades.exceptions.IncorrectServerNameException;
-import ru.ddg.stalt.ocular.lib.facades.exceptions.WrongConnectionException;
-import ru.ddg.stalt.ocular.lib.facades.model.*;
+import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
+import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
+import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
-import ru.ddg.stalt.ocular.lib.impl.contracts.requests.AddCameraRequestDto;
-import ru.ddg.stalt.ocular.lib.impl.contracts.requests.RequestDto;
-import ru.ddg.stalt.ocular.lib.impl.services.QueueService;
+import ru.ddg.stalt.ocular.lib.impl.contracts.requests.AddCameraRequest;
+import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
+import ru.ddg.stalt.ocular.lib.impl.model.QueueConnection;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
 
 import java.util.List;
 import java.util.UUID;
 
 public class OcularServiceImpl implements OcularService {
-    private final static String QUEUE_NAME = "OCULAR";
-
     @Autowired
-    QueueService queueService;
+    private QueueService queueService;
 
     @Override
     public Connection connect(String address, int port) throws Exception {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(address);
-        connectionFactory.setPort(port);
-
-        Connection connection = connectionFactory.newConnection();
-        Channel channel = connection.createChannel();
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-
-        return new QueueConnection(connection,channel);
-
+        // TODO
+        com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, null, null);
+        return new QueueConnection(connection, null);
     }
 
     @Override
@@ -55,9 +43,9 @@ public class OcularServiceImpl implements OcularService {
         StringBuilder stringBuilder = new StringBuilder("ocular/");
         stringBuilder.append(serverName);
         stringBuilder.append("/status/request");
-        RequestDto requestDto = new RequestDto(UUID.randomUUID());
+        BaseRequest requestDto = new BaseRequest(UUID.randomUUID());
 
-        queueService.sendCommand(stringBuilder.toString(),requestDto);
+        queueService.send(stringBuilder.toString(),requestDto);
 
         return null;
     }
@@ -69,9 +57,9 @@ public class OcularServiceImpl implements OcularService {
         StringBuilder stringBuilder = new StringBuilder("ocular/");
         stringBuilder.append(serverName);
         stringBuilder.append("/reset/request");
-        RequestDto requestDto = new RequestDto(UUID.randomUUID());
+        BaseRequest requestDto = new BaseRequest(UUID.randomUUID());
 
-        queueService.sendCommand(stringBuilder.toString(),requestDto);
+        queueService.send(stringBuilder.toString(),requestDto);
     }
 
     public void addCamera(Connection connection, Camera camera, String serverName) throws Exception {
@@ -92,11 +80,11 @@ public class OcularServiceImpl implements OcularService {
         cameraDto.setStatus(camera.getStatus());
         cameraDto.setStorageId(camera.getStorageId());
 
-        AddCameraRequestDto addCameraRequest = new AddCameraRequestDto();
+        AddCameraRequest addCameraRequest = new AddCameraRequest();
         addCameraRequest.setCamera(cameraDto);
-        addCameraRequest.setRequestUid(UUID.randomUUID());
+        addCameraRequest.setUuid(UUID.randomUUID());
 
-        queueService.sendCommand(stringBuilder.toString(),addCameraRequest);
+        queueService.send(stringBuilder.toString(),addCameraRequest);
 
     }
 

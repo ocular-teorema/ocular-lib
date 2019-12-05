@@ -11,8 +11,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RequestDto implements Request{
-    @JsonProperty("request_uid")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID requestUid;
+public class BaseRequest {
+    @JsonProperty("uuid")
+    private UUID uuid;
+    private String server;
 }

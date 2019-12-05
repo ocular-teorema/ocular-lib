@@ -1,4 +1,4 @@
-package ru.ddg.stalt.ocular.lib.facades.exceptions;
+package ru.ddg.stalt.ocular.lib.exceptions;
 
 public class BaseException extends Exception {
     /**
