@@ -4,7 +4,11 @@ import com.rabbitmq.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
+import ru.ddg.stalt.ocular.lib.impl.contracts.PtzControlDto;
 import ru.ddg.stalt.ocular.lib.impl.contracts.Response;
+import ru.ddg.stalt.ocular.lib.impl.contracts.StorageDto;
+import ru.ddg.stalt.ocular.lib.impl.contracts.requests.AddStorageRequest;
+import ru.ddg.stalt.ocular.lib.impl.contracts.requests.PtzControlRequest;
 import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.AddCameraRequest;
@@ -38,7 +42,7 @@ public class OcularServiceImpl implements OcularService {
 
         String server = serverName + "/status/request";
 
-        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),server);
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),server,"status_request");
 
         Response response = queueService.send(connection, baseRequest);
         //TODO
@@ -50,7 +54,7 @@ public class OcularServiceImpl implements OcularService {
         checkConnection(connection);
         checkServerName(serverName);
         String server = serverName + "/reset/request/";
-        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server);
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "reset_message");
 
         queueService.send(connection,baseRequest);
     }
@@ -71,7 +75,7 @@ public class OcularServiceImpl implements OcularService {
         cameraDto.setStatus(camera.getStatus());
         cameraDto.setStorageId(camera.getStorageId());
 
-        AddCameraRequest addCameraRequest = new AddCameraRequest(UUID.randomUUID(), server);
+        AddCameraRequest addCameraRequest = new AddCameraRequest(UUID.randomUUID(), server, "camera_add_request_message");
         addCameraRequest.setCamera(cameraDto);
 
         queueService.send(connection, addCameraRequest);
@@ -79,12 +83,28 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void removeCamera(Connection connection, long cameraId) throws Exception {
+    public void removeCamera(Connection connection, String serverName, String cameraId) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
 
+        StringBuffer server = new StringBuffer(serverName)
+                .append("/cameras/")
+                .append(cameraId)
+                .append("delete/request");
+
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server.toString(), "camera_delete_request_message");
+        queueService.send(connection, baseRequest);
     }
 
     @Override
-    public List<Camera> getCameraList(Connection connection, String serverName) {
+    public List<Camera> getCameraList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/cameras/list/request";
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "camera_list_request_message");
+        Response response = queueService.send(connection, baseRequest);
+        //TODO
         return null;
     }
 
@@ -94,18 +114,58 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void ptzControl(Connection connection, String serverName, int vertical, int horizontal, int zoom) {
+    public void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
+        StringBuffer server = new StringBuffer(serverName)
+                .append("/cameras/")
+                .append(cameraId)
+                .append("/ptz_control");
 
+        if (vertical != 0) {
+            PtzControlDto ptzControlDto = new PtzControlDto(cameraId, vertical);
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server.toString(),"camera_ptz_move_vertical");
+            request.setPtzControl(ptzControlDto);
+            queueService.send(connection, request);
+        }
+        if (horizontal != 0) {
+            PtzControlDto ptzControlDto = new PtzControlDto(cameraId, horizontal);
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server.toString(),"camera_ptz_move_horizontal");
+            request.setPtzControl(ptzControlDto);
+            queueService.send(connection, request);
+        }
+        if (zoom != 0) {
+            PtzControlDto ptzControlDto = new PtzControlDto(cameraId, zoom);
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server.toString()," camera_ptz_zoom");
+            request.setPtzControl(ptzControlDto);
+            queueService.send(connection, request);
+        }
     }
 
     @Override
-    public List<Storage> getStorageList(Connection connection, String serverName) {
+    public List<Storage> getStorageList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/storages/list/request";
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, " storage_list_request_message");
+        Response response = queueService.send(connection, baseRequest);
+        //TODO
         return null;
     }
 
     @Override
-    public void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws Exception {
+    public void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
 
+        String server = serverName + "/storages/add/request";
+        StorageDto storageDto = new StorageDto();
+        storageDto.setName(storageName);
+        storageDto.setDefaultArchivePath(storagePath);
+        AddStorageRequest addStorageRequest = new AddStorageRequest(UUID.randomUUID(), server, " storage_add_request_message");
+        addStorageRequest.setStorageDto(storageDto);
+        queueService.send(connection, addStorageRequest);
     }
 
     @Override

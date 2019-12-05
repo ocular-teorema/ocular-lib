@@ -12,7 +12,7 @@ public class AddCameraRequest extends BaseRequest {
 
     private CameraDto camera;
 
-    public AddCameraRequest(UUID uuid, String server) {
-        super(uuid, server);
+    public AddCameraRequest(UUID uuid, String server, String type) {
+        super(uuid, server, type);
     }
 }

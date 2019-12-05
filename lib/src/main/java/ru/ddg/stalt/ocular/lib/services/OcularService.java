@@ -59,7 +59,7 @@ public interface OcularService {
      * @param connection объект соединения
      * @throws Exception ошибка удаления камеры
      */
-    void removeCamera(Connection connection, long cameraId) throws Exception;
+    void removeCamera(Connection connection, String serveName, String cameraId) throws Exception;
 
     /**
      * Возвращает список камер
@@ -68,7 +68,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @see Camera
      */
-    List<Camera> getCameraList(Connection connection, String serverName);
+    List<Camera> getCameraList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Переключает режим записи камеры.
@@ -88,7 +88,7 @@ public interface OcularService {
      * @param horizontal движение в горизонтальном направлении
      * @param zoom приближение
      */
-    void ptzControl(Connection connection, String serverName, int vertical, int horizontal, int zoom);
+    void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Возвращает список хранилищ заданного сервера
@@ -96,7 +96,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список хранилищ List<Storage>
      */
-    List<Storage> getStorageList(Connection connection, String serverName);
+    List<Storage> getStorageList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
 
     /**
      * Добавляет новое хранилище с заданным именем по заданному пути

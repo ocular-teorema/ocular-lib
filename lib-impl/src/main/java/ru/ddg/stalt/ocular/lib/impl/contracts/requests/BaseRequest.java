@@ -14,4 +14,5 @@ public class BaseRequest {
     @JsonProperty("uuid")
     private UUID uuid;
     private String server;
+    private String type;
 }

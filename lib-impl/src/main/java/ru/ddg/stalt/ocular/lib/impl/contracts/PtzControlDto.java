@@ -2,11 +2,13 @@ package ru.ddg.stalt.ocular.lib.impl.contracts;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class PtzControlDto {
 
     @JsonProperty("camera_id")
@@ -14,5 +16,5 @@ public class PtzControlDto {
     private String cameraId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String step;
+    private Integer step;
 }
