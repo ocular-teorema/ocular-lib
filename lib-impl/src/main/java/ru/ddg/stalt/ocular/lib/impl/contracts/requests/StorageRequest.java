@@ -1,5 +1,6 @@
 package ru.ddg.stalt.ocular.lib.impl.contracts.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import ru.ddg.stalt.ocular.lib.impl.contracts.StorageDto;
@@ -8,11 +9,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class AddStorageRequest extends BaseRequest {
+public class StorageRequest extends BaseRequest {
+
+    @JsonProperty("storage_id")
+    private String storageId;
 
     private StorageDto storageDto;
 
-    public AddStorageRequest(UUID uuid, String server, String type) {
+    public StorageRequest(UUID uuid, String server, String type) {
         super(uuid, server, type);
     }
 }

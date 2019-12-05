@@ -62,6 +62,15 @@ public interface OcularService {
     void removeCamera(Connection connection, String serveName, String cameraId) throws Exception;
 
     /**
+     * Обновляет существующую камеру
+     * @param camera камера
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @throws Exception ошибка обновления камеры
+     */
+    void updateCamera(Connection connection, String serverName, Camera camera) throws Exception;
+
+    /**
      * Возвращает список камер
      * @return список камер List<Camera>
      * @param connection объект соединения
@@ -107,6 +116,28 @@ public interface OcularService {
      * @throws Exception ошибка добавления хранилища
      */
     void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws Exception;
+
+    /**
+     * Обновляет хранилище
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param storageId идентификатор хранилища
+     * @param storageName имя хранилища
+     * @param storagePath адрес пути
+     * @throws Exception ошибка обновления хранилища
+     */
+    void updateStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception;
+
+    /**
+     * Удаляет хранилище
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param storageId идентификатор хранилища
+     * @param storageName имя хранилища
+     * @param storagePath адрес пути
+     * @throws Exception ошибка удаления хранилища
+     */
+    void deleteStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception;
 
     /**
      * Добавляет новое расписание включения камеры, основываясь на днях недели

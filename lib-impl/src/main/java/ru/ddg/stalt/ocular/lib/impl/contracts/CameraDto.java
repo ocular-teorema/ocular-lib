@@ -38,8 +38,8 @@ public class CameraDto {
 
     private CameraStatusEnum status;
 
-    @JsonProperty("enabled")
-    private Boolean isRecording;
+//    @JsonProperty("enabled")
+//    private Boolean isRecording;
 
     @JsonProperty("storage_days")
     @JsonInclude(JsonInclude.Include.NON_NULL)
