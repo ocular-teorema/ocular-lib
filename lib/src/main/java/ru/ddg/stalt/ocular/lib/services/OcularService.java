@@ -169,6 +169,44 @@ public interface OcularService {
     void addSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception;
 
     /**
+     * Обновляет расписание включения камеры, основываясь на днях недели
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param weekDays массив дней недели (1-7), в которые камера включена
+     * @throws Exception ошибка обновления расписания
+     */
+    void updateSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception;
+
+    /**
+     * Оббновляет расписание, основываясь на времени Unix (Unix timestamp)
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param startTimestamp начало планирования
+     * @param stopTimestamp завершение
+     * @throws Exception ошибка обновления расписания
+     */
+    void updateSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception;
+
+    /**
+     * Обновляет расписание включения камеры, в заданный интервал времени.
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param startTime начало планирования (час, минута и секунда HH-MM-SS)
+     * @param stopTime завершение (час, минута и секунда HH-MM-SS)
+     * @throws Exception ошибка обновления расписания
+     */
+    void updateSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception;
+
+    /**
+     * Удаляет расписание.
+     * @param connection объект соединения
+     * @param serverName имя сервера
+     * @param scheduleId идентификатор расписания
+     * @throws Exception ошибка удаления расписания
+     */
+    void deleteSchedule(Connection connection, String serverName, int scheduleId) throws Exception;
+
+    /**
      * Возвращает записи из архива
      * @param connection объект соединения
      * @param serverName имя сервера

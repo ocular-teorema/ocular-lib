@@ -206,18 +206,115 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void addSchedule(Connection connection, String serverName, List<Integer> weekDays) throws WrongConnectionException, IncorrectServerNameException {
+    public void addSchedule(Connection connection, String serverName, List<Integer> weekDays) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+        checkConnection(connection);
+        checkServerName(serverName);
 
+        String server = serverName + "/schedules/add";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("weekdays");
+        dto.setWeekDays(weekDays);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
     }
 
     @Override
     public void addSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
 
+        String server = serverName + "/schedules/add";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("timestamp");
+        dto.setStartTimestamp(startTimestamp);
+        dto.setStartTimestamp(stopTimestamp);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
     }
 
     @Override
     public void addSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
 
+        String server = serverName + "/schedules/add";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("time_period");
+        dto.setStartTime(startTime);
+        dto.setStartTime(stopTime);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
+    }
+
+    @Override
+    public void updateSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/schedules/update";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("weekdays");
+        dto.setWeekDays(weekDays);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
+    }
+
+    @Override
+    public void updateSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/schedules/update";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("timestamp");
+        dto.setStartTimestamp(startTimestamp);
+        dto.setStartTimestamp(stopTimestamp);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
+    }
+
+    @Override
+    public void updateSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/schedules/update";
+        ScheduleDto dto = new ScheduleDto();
+        dto.setType("time_period");
+        dto.setStartTime(startTime);
+        dto.setStartTime(stopTime);
+
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
+        request.setScheduleDto(dto);
+
+        queueService.send(connection, request);
+    }
+
+    @Override
+    public void deleteSchedule(Connection connection, String serverName, int scheduleId) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
+
+        String server = serverName + "/schedules/delete";
+        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedules_delete");
+        request.setScheduleId(scheduleId);
+
+        queueService.send(connection, request);
     }
 
     @Override
