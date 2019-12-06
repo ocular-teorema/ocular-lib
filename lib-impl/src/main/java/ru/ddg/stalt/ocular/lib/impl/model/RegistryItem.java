@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Getter
 @AllArgsConstructor
-public class RequestKey<T extends BaseResponse> {
+public class RegistryItem<T extends BaseResponse> {
     private final UUID uuid;
     private final CompletableFuture<T> completableFuture;
     private final Class<T> responseClass;

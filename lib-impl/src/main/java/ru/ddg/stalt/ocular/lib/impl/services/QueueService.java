@@ -1,5 +1,6 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -8,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
+import ru.ddg.stalt.ocular.lib.impl.exceptions.DuplicateRequestException;
 import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Component
@@ -19,6 +24,9 @@ public class QueueService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RequestRegistry requestRegistry;
 
     public Connection createConnection(String host, int port, String username, String password) throws IOException, TimeoutException {
         final ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -31,12 +39,20 @@ public class QueueService {
 
     }
 
-    public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, TimeoutException {
+    public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        CompletableFuture<T> completableFuture = new CompletableFuture<>();
+        try {
+            requestRegistry.register(request.getUuid(), completableFuture, responseClass);
+        }
+        catch (DuplicateRequestException e) {
+            throw new IllegalArgumentException("request has contain unique UUID.", e);
+        }
+
         byte[] json = objectMapper.writeValueAsBytes(request);
 
         try (Channel channel = ocularConnection.getConnection().createChannel()) {
             channel.basicPublish(request.getServer(), "", null, json);
         }
-        return null;
+        return completableFuture.get(ocularConnection.getTimeout(), TimeUnit.MILLISECONDS);
     }
 }
