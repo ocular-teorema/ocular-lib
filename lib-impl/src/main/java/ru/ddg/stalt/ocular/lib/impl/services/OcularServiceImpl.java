@@ -180,18 +180,7 @@ public class OcularServiceImpl implements OcularService {
         }
         List<Camera> cameras = new ArrayList<>();
         for (CameraDto dto : cameraListDto.getCameras()) {
-            Camera camera = new Camera();
-            camera.setCameraId(dto.getCameraId());
-            camera.setName(dto.getName());
-            camera.setAnalysisType(dto.getAnalysisType());
-            camera.setPrimaryAddress(dto.getPrimaryAddress());
-            camera.setSecondaryAddress(dto.getSecondaryAddress());
-            camera.setStatus(dto.getStatus());
-            camera.setStorageDays(dto.getStorageDays());
-            camera.setStorageId(dto.getStorageId());
-            camera.setScheduleId(dto.getScheduleId());
-            camera.setStreamAddress(dto.getStreamAddress());
-
+            Camera camera = convertCamera(dto);
             cameras.add(camera);
         }
 
@@ -272,10 +261,7 @@ public class OcularServiceImpl implements OcularService {
 
         List<Storage> storages = new ArrayList<>();
         for (StorageDto dto : storageListDto.getStorages()) {
-            Storage storage = new Storage();
-            storage.setId(dto.getId());
-            storage.setName(dto.getName());
-            storage.setDefaultArchivePath(dto.getDefaultArchivePath());
+            Storage storage = convertStorage(dto);
 
             storages.add(storage);
         }
@@ -536,14 +522,7 @@ public class OcularServiceImpl implements OcularService {
         }
         List<Schedule> scheduleList = new ArrayList<>();
         for (ScheduleDto dto : scheduleListDto.getSchedules()) {
-            Schedule schedule = new Schedule();
-            schedule.setId(dto.getId());
-            schedule.setType(dto.getType());
-            schedule.setWeekDays(dto.getWeekDays());
-            schedule.setStartTime(dto.getStartTime());
-            schedule.setStopTime(dto.getStopTime());
-            schedule.setStartTimestamp(dto.getStartTimestamp());
-            schedule.setStopTimestamp(dto.getStopTimestamp());
+            Schedule schedule = convertSchedule(dto);
 
             scheduleList.add(schedule);
         }
@@ -576,41 +555,20 @@ public class OcularServiceImpl implements OcularService {
 
                 List<Camera> cameraList = new ArrayList<>();
                 for (CameraDto cameraDto : serverDto.getCameras()) {
-                    Camera camera = new Camera();
-                    camera.setCameraId(cameraDto.getCameraId());
-                    camera.setName(cameraDto.getName());
-                    camera.setAnalysisType(cameraDto.getAnalysisType());
-                    camera.setPrimaryAddress(cameraDto.getPrimaryAddress());
-                    camera.setSecondaryAddress(cameraDto.getSecondaryAddress());
-                    camera.setStatus(cameraDto.getStatus());
-                    camera.setStorageDays(cameraDto.getStorageDays());
-                    camera.setStorageId(cameraDto.getStorageId());
-                    camera.setScheduleId(cameraDto.getScheduleId());
-                    camera.setStreamAddress(cameraDto.getStreamAddress());
-
+                    Camera camera = convertCamera(cameraDto);
                     cameraList.add(camera);
                 }
 
                 List<Schedule> scheduleList = new ArrayList<>();
                 for (ScheduleDto scheduleDto : serverDto.getSchedules()) {
-                    Schedule schedule = new Schedule();
-                    schedule.setId(scheduleDto.getId());
-                    schedule.setType(scheduleDto.getType());
-                    schedule.setWeekDays(scheduleDto.getWeekDays());
-                    schedule.setStartTime(scheduleDto.getStartTime());
-                    schedule.setStopTime(scheduleDto.getStopTime());
-                    schedule.setStartTimestamp(scheduleDto.getStartTimestamp());
-                    schedule.setStopTimestamp(scheduleDto.getStopTimestamp());
+                    Schedule schedule = convertSchedule(scheduleDto);
 
                     scheduleList.add(schedule);
                 }
 
                 List<Storage> storageList = new ArrayList<>();
                 for (StorageDto storageDto : serverDto.getStorages()) {
-                    Storage storage = new Storage();
-                    storage.setId(storageDto.getId());
-                    storage.setName(storageDto.getName());
-                    storage.setDefaultArchivePath(storageDto.getDefaultArchivePath());
+                    Storage storage = convertStorage(storageDto);
 
                     storageList.add(storage);
                 }
@@ -656,5 +614,43 @@ public class OcularServiceImpl implements OcularService {
         if (serverName == null || serverName.isEmpty()) {
             throw new IncorrectServerNameException("Wrong server name");
         }
+    }
+
+    private Camera convertCamera(CameraDto cameraDto) {
+        Camera camera = new Camera();
+        camera.setCameraId(cameraDto.getCameraId());
+        camera.setName(cameraDto.getName());
+        camera.setAnalysisType(cameraDto.getAnalysisType());
+        camera.setPrimaryAddress(cameraDto.getPrimaryAddress());
+        camera.setSecondaryAddress(cameraDto.getSecondaryAddress());
+        camera.setStatus(cameraDto.getStatus());
+        camera.setStorageDays(cameraDto.getStorageDays());
+        camera.setStorageId(cameraDto.getStorageId());
+        camera.setScheduleId(cameraDto.getScheduleId());
+        camera.setStreamAddress(cameraDto.getStreamAddress());
+
+        return camera;
+    }
+
+    private Storage convertStorage(StorageDto storageDto) {
+        Storage storage = new Storage();
+        storage.setId(storageDto.getId());
+        storage.setName(storageDto.getName());
+        storage.setDefaultArchivePath(storageDto.getDefaultArchivePath());
+
+        return storage;
+    }
+
+    private Schedule convertSchedule(ScheduleDto scheduleDto) {
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleDto.getId());
+        schedule.setType(scheduleDto.getType());
+        schedule.setWeekDays(scheduleDto.getWeekDays());
+        schedule.setStartTime(scheduleDto.getStartTime());
+        schedule.setStopTime(scheduleDto.getStopTime());
+        schedule.setStartTimestamp(scheduleDto.getStartTimestamp());
+        schedule.setStopTimestamp(scheduleDto.getStopTimestamp());
+
+        return schedule;
     }
 }
