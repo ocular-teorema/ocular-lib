@@ -252,7 +252,7 @@ public class OcularServiceImpl implements OcularService {
         storageDto.setDefaultArchivePath(storagePath);
         StorageRequest addStorageRequest = new StorageRequest(UUID.randomUUID(), server, "storage_add");
         addStorageRequest.setStorageDto(storageDto);
-        queueService.send(connection, addStorageRequest);
+        queueService.send((OcularConnection) connection, addStorageRequest);
     }
 
     @Override

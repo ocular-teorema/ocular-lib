@@ -7,6 +7,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.ddg.stalt.ocular.lib.exceptions.ResponseTimeoutException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
 import ru.ddg.stalt.ocular.lib.impl.exceptions.DuplicateRequestException;
@@ -39,7 +40,22 @@ public class QueueService {
 
     }
 
-    public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws ResponseTimeoutException {
+        try {
+            return innerSend(ocularConnection, request, responseClass);
+        }
+        catch (IOException e) {
+            throw new IllegalArgumentException("impossible to convert request to json", e);
+        }
+        catch (ExecutionException | InterruptedException e) {
+            throw new UnsupportedOperationException("error on waiting response", e);
+        }
+        catch (TimeoutException e) {
+            throw new ResponseTimeoutException("waiting response is timed out.", e);
+        }
+    }
+
+    public <T extends BaseResponse> T innerSend(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         try {
             requestRegistry.register(request.getUuid(), completableFuture, responseClass);
