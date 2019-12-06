@@ -1,4 +1,4 @@
-package ru.ddg.stalt.ocular.lib.impl.model;
+package ru.ddg.stalt.ocular.lib.impl.contracts.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

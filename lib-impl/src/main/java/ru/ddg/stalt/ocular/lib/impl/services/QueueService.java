@@ -11,7 +11,6 @@ import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
 import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 
 import java.io.IOException;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeoutException;
 
 @Component

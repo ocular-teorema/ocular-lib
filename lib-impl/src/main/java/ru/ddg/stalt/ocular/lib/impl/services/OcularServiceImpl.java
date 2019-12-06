@@ -5,11 +5,13 @@ import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.*;
+import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -20,18 +22,18 @@ public class OcularServiceImpl implements OcularService {
 
     @Override
     public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException {
-        // TODO
          com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
          return new OcularConnection(connection, responseTimeout);
     }
 
     @Override
     public void disconnect(Connection connection) throws IOException {
-        connection.close();
+        OcularConnection ocularConnection = (OcularConnection)connection;
+        ocularConnection.getConnection().close();
     }
 
     @Override
-    public ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException {
+    public ServerState getServerState(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -39,22 +41,63 @@ public class OcularServiceImpl implements OcularService {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),server,"status");
 
-        BaseResponse response = queueService.send((OcularConnection) connection, baseRequest);
-        //TODO
-        return null;
+        ServerStateDto serverStateDto = queueService.send((OcularConnection) connection, baseRequest, ServerStateDto.class);
+        if (!serverStateDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(serverStateDto.getErrorDescription());
+        }
+
+        ServerHardwareInfo hardwareInfo = new ServerHardwareInfo();
+
+        hardwareInfo.setCpuUtilization(serverStateDto.getHardware().getCpuUtilization());
+        hardwareInfo.setDefaultVideoPath(serverStateDto.getHardware().getDefaultVideoPath());
+        hardwareInfo.setDiscUsage(serverStateDto.getHardware().getDiscUsage());
+        hardwareInfo.setIpAddress(serverStateDto.getHardware().getIpAddress());
+        hardwareInfo.setOcularVersion(serverStateDto.getHardware().getOcularVersion());
+        hardwareInfo.setUptime(serverStateDto.getHardware().getUptime());
+        hardwareInfo.setLoadAverage(serverStateDto.getHardware().getLoadAverage());
+
+        List<ServiceState> services = new ArrayList<>();
+        for (ServiceStateDto dto: serverStateDto.getServices()) {
+            ServiceState serviceState = new ServiceState();
+            serviceState.setName(dto.getName());
+            serviceState.setStatus(dto.getStatus());
+            serviceState.setErrorCode(dto.getErrorCode());
+            serviceState.setErrorMessage(dto.getErrorMessage());
+
+            services.add(serviceState);
+        }
+
+        List<CameraState> cameraStates = new ArrayList<>();
+        for (CameraStateDto stateDto : serverStateDto.getCameras()) {
+            CameraState cameraState = new CameraState();
+            cameraState.setCameraId(stateDto.getCameraId());
+            cameraState.setStatus(stateDto.getStatus());
+            cameraState.setErrorCode(stateDto.getErrorCode());
+            cameraState.setErrorMessage(stateDto.getErrorMessage());
+
+            cameraStates.add(cameraState);
+        }
+
+        return new ServerState(hardwareInfo,services,cameraStates);
     }
 
     @Override
-    public void resetServer(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void resetServer(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
         String server = serverName + "/reset";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "reset_request");
 
-        queueService.send(connection,baseRequest);
+        BaseResponse response = queueService.send((OcularConnection)connection,baseRequest, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
-    public void addCamera(Connection connection, Camera camera, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void addCamera(Connection connection, Camera camera, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
         String server = serverName + "/cameras/add";
@@ -71,23 +114,32 @@ public class OcularServiceImpl implements OcularService {
         CameraRequest addCameraRequest = new CameraRequest(UUID.randomUUID(), server, "cameras_add");
         addCameraRequest.setCameraDto(cameraDto);
 
-        queueService.send(connection, addCameraRequest);
-
+        BaseResponse response = queueService.send((OcularConnection)connection, addCameraRequest, BaseResponse.class);
+        if(response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void removeCamera(Connection connection, String serverName, String cameraId) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void removeCamera(Connection connection, String serverName, String cameraId) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/cameras/delete";
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "cameras_delete");
-        queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send((OcularConnection)connection, baseRequest, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void updateCamera(Connection connection, String serverName, Camera camera) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void updateCamera(Connection connection, String serverName, Camera camera) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -106,19 +158,44 @@ public class OcularServiceImpl implements OcularService {
 
         request.setCameraDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public List<Camera> getCameraList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public List<Camera> getCameraList(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/cameras/list";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "cameras_list");
-        BaseResponse response = queueService.send(connection, baseRequest);
-        //TODO
-        return null;
+        CameraListDto cameraListDto = queueService.send((OcularConnection)connection, baseRequest, CameraListDto.class);
+        if (!cameraListDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(cameraListDto.getErrorDescription());
+        }
+        List<Camera> cameras = new ArrayList<>();
+        for (CameraDto dto : cameraListDto.getCameras()) {
+            Camera camera = new Camera();
+            camera.setCameraId(dto.getCameraId());
+            camera.setName(dto.getName());
+            camera.setAnalysisType(dto.getAnalysisType());
+            camera.setPrimaryAddress(dto.getPrimaryAddress());
+            camera.setSecondaryAddress(dto.getSecondaryAddress());
+            camera.setStatus(dto.getStatus());
+            camera.setStorageDays(dto.getStorageDays());
+            camera.setStorageId(dto.getStorageId());
+            camera.setScheduleId(dto.getScheduleId());
+            camera.setStreamAddress(dto.getStreamAddress());
+
+            cameras.add(camera);
+        }
+
+        return cameras;
     }
 
     @Override

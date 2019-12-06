@@ -1,6 +1,8 @@
 package ru.ddg.stalt.ocular.lib.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -9,11 +11,13 @@ import java.util.List;
  * Информация об оборудовании, сервисах, список камер.
  */
 @Getter
+@Setter
+@AllArgsConstructor
 public class ServerState {
 
     private ServerHardwareInfo hardwareInfo;
 
-    private List<Service> services;
+    private List<ServiceState> services;
 
-    private List<Camera> cameras;
+    private List<CameraState> cameras;
 }

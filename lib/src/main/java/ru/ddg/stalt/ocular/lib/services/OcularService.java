@@ -14,11 +14,14 @@ public interface OcularService {
      * Подключение к очереди
      * @param address адрес сервера
      * @param port порт
+     * @param username имя пользователя
+     * @param password пароль
+     * @param responseTimeout время ожидания
      * @return объект соединения
      * @throws IOException ошибка ввода-вывода
      * @throws TimeoutException истекло время ожидания
      */
-    Connection connect(String address, int port, String username, String password) throws IOException, TimeoutException;
+    Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException;
 
     /**
      * Отключение от очереди
@@ -34,7 +37,7 @@ public interface OcularService {
      * @return информация о сервере
      * @see ServerState;
      */
-    ServerState getServerState(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException;
+    ServerState getServerState(Connection connection, String serverName) throws Exception;
 
     /**
      * Отправляет команду 'reset' на сервер ocular
@@ -42,7 +45,7 @@ public interface OcularService {
      * @param connection объект соединения
      * @throws Exception
      */
-    void resetServer(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    void resetServer(Connection connection, String serverName) throws Exception;
 
     /**
      * Добавляет новую камеру
@@ -50,7 +53,7 @@ public interface OcularService {
      * @param connection объект соединения
      * @throws Exception ошибка добавления камеры
      */
-    void addCamera(Connection connection, Camera camera, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    void addCamera(Connection connection, Camera camera, String serverName) throws Exception;
 
     /**
      * Удаляет существующую камеру
@@ -76,7 +79,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @see Camera
      */
-    List<Camera> getCameraList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    List<Camera> getCameraList(Connection connection, String serverName) throws Exception;
 
     /**
      * Переключает режим записи камеры.

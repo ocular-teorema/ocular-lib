@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ServerDto {
+public class ServerDto extends BaseResponse {
 
     private String serverId;
 

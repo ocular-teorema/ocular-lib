@@ -8,7 +8,7 @@ import ru.ddg.stalt.ocular.lib.model.CameraStatusEnum;
 
 @Getter
 @Setter
-public class CameraDto {
+public class CameraDto extends BaseResponse {
 
     @JsonProperty("id")
     private String cameraId;
@@ -38,8 +38,8 @@ public class CameraDto {
 
     private CameraStatusEnum status;
 
-//    @JsonProperty("enabled")
-//    private Boolean isRecording;
+    @JsonProperty("enabled")
+    private Boolean isRecording;
 
     @JsonProperty("storage_days")
     @JsonInclude(JsonInclude.Include.NON_NULL)

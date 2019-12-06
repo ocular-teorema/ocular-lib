@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PtzControlDto {
+public class PtzControlDto extends BaseResponse {
 
     @JsonProperty("camera_id")
     @JsonInclude(JsonInclude.Include.NON_NULL)
