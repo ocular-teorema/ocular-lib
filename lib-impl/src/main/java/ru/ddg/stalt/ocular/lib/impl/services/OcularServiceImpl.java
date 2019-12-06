@@ -200,11 +200,24 @@ public class OcularServiceImpl implements OcularService {
 
     @Override
     public void setRecording(Connection connection, String serverName, Camera camera, boolean isRecording) throws Exception {
+        checkConnection(connection);
+        checkServerName(serverName);
+        String server = serverName + "/cameras/set_recording";
+        RecordingRequest recordingRequest = new RecordingRequest(UUID.randomUUID(), server, "cameras_set_recording");
+        recordingRequest.setCameraId(camera.getCameraId());
+        recordingRequest.setIsRecording(isRecording);
+        BaseResponse response = queueService.send((OcularConnection)connection, recordingRequest, BaseResponse.class);
+
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
 
     }
 
     @Override
-    public void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
         String server = serverName + "/cameras/ptz_control";
@@ -213,36 +226,65 @@ public class OcularServiceImpl implements OcularService {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, vertical);
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server,"cameras_ptz_move_vertical");
             request.setPtzControl(ptzControlDto);
-            queueService.send(connection, request);
+            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            if (response.isSuccess()) {
+                return;
+            }
+            //TODO exceptions
+            throw new Exception(response.getErrorDescription());
         }
         if (horizontal != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, horizontal);
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server,"cameras_ptz_move_horizontal");
             request.setPtzControl(ptzControlDto);
-            queueService.send(connection, request);
+            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            if (response.isSuccess()) {
+                return;
+            }
+            //TODO exceptions
+            throw new Exception(response.getErrorDescription());
         }
         if (zoom != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, zoom);
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), server,"cameras_ptz_zoom");
             request.setPtzControl(ptzControlDto);
-            queueService.send(connection, request);
+            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            if (response.isSuccess()) {
+                return;
+            }
+            //TODO exceptions
+            throw new Exception(response.getErrorDescription());
         }
     }
 
     @Override
-    public List<Storage> getStorageList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public List<Storage> getStorageList(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/storages/list";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "storage_list");
-        BaseResponse response = queueService.send(connection, baseRequest);
-        //TODO
-        return null;
+        StorageListDto storageListDto = queueService.send((OcularConnection)connection, baseRequest, StorageListDto.class);
+        if (!storageListDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(storageListDto.getErrorDescription());
+        }
+
+        List<Storage> storages = new ArrayList<>();
+        for (StorageDto dto : storageListDto.getStorages()) {
+            Storage storage = new Storage();
+            storage.setId(dto.getId());
+            storage.setName(dto.getName());
+            storage.setDefaultArchivePath(dto.getDefaultArchivePath());
+
+            storages.add(storage);
+        }
+
+        return storages;
     }
 
     @Override
-    public void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -252,11 +294,17 @@ public class OcularServiceImpl implements OcularService {
         storageDto.setDefaultArchivePath(storagePath);
         StorageRequest addStorageRequest = new StorageRequest(UUID.randomUUID(), server, "storage_add");
         addStorageRequest.setStorageDto(storageDto);
-        queueService.send((OcularConnection) connection, addStorageRequest);
+
+        BaseResponse response = queueService.send((OcularConnection)connection, addStorageRequest, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void updateStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void updateStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -268,7 +316,12 @@ public class OcularServiceImpl implements OcularService {
         storageRequest.setStorageId(storageId);
         storageRequest.setStorageDto(storageDto);
 
-        queueService.send(connection, storageRequest);
+        BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -280,11 +333,16 @@ public class OcularServiceImpl implements OcularService {
         StorageRequest storageRequest = new StorageRequest(UUID.randomUUID(), server, "storage_delete_request");
         storageRequest.setStorageId(storageId);
 
-        queueService.send(connection, storageRequest);
+        BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void addSchedule(Connection connection, String serverName, List<Integer> weekDays) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void addSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -296,7 +354,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -313,7 +376,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -330,7 +398,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_add");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -346,7 +419,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -363,7 +441,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -380,7 +463,12 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedule_update");
         request.setScheduleDto(dto);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -392,64 +480,174 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), server, "schedules_delete");
         request.setScheduleId(scheduleId);
 
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public List<Record> getVideoArchive(Connection connection, String serverName, Integer startTimestamp, Integer stopTimestamp, List<String> cameras, Integer skip, Integer limit) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public List<Record> getVideoArchive(Connection connection, String serverName, Integer startTimestamp, Integer stopTimestamp, List<String> cameras, Integer skip, Integer limit) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/archive/archive/video/request";
-        ArchiveRecordRequest request = new ArchiveRecordRequest(UUID.randomUUID(), server, "archive_video_request");
+        ArchiveRecordRequest request = new ArchiveRecordRequest(UUID.randomUUID(), server, "archive_video");
         request.setCameraIds(cameras);
         request.setStartTimestamp(startTimestamp);
         request.setEndTimestamp(stopTimestamp);
         request.setLimit(limit);
         request.setSkip(skip);
 
-        BaseResponse response = queueService.send(connection, request);
-        //TODO
-        return null;
+        RecordListDto recordListDto = queueService.send((OcularConnection) connection, request, RecordListDto.class);
+        if (!recordListDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(recordListDto.getErrorDescription());
+        }
+
+        List<Record> records = new ArrayList<>();
+        for (RecordDto dto : recordListDto.getRecords()) {
+            Record record = new Record();
+            record.setId(dto.getId());
+            record.setCameraId(dto.getCameraId());
+            record.setStartTimestamp(dto.getStartTimestamp());
+            record.setEndTimestamp(dto.getEndTimestamp());
+            record.setFileSize(dto.getFileSize());
+
+            records.add(record);
+        }
+
+        return records;
     }
 
     @Override
-    public List<Schedule> getScheduleList(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException {
+    public List<Schedule> getScheduleList(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/schedules/list/request";
-        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "schedule_list_request_message");
-        BaseResponse response = queueService.send(connection, baseRequest);
-        //TODO
-        return null;
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "schedule_list");
+        ScheduleListDto scheduleListDto = queueService.send((OcularConnection)connection, baseRequest, ScheduleListDto.class);
+        if (!scheduleListDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(scheduleListDto.getErrorDescription());
+        }
+        List<Schedule> scheduleList = new ArrayList<>();
+        for (ScheduleDto dto : scheduleListDto.getSchedules()) {
+            Schedule schedule = new Schedule();
+            schedule.setId(dto.getId());
+            schedule.setType(dto.getType());
+            schedule.setWeekDays(dto.getWeekDays());
+            schedule.setStartTime(dto.getStartTime());
+            schedule.setStopTime(dto.getStopTime());
+            schedule.setStartTimestamp(dto.getStartTimestamp());
+            schedule.setStopTimestamp(dto.getStopTimestamp());
+
+            scheduleList.add(schedule);
+        }
+
+        return scheduleList;
     }
 
     @Override
-    public List<Organization> exportConfig(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public List<Organization> exportConfig(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/config/export";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "config_export");
-        BaseResponse response = queueService.send(connection, baseRequest);
-        //TODO
-        return null;
+        OrganizationListDto organizationListDto = queueService.send((OcularConnection) connection, baseRequest, OrganizationListDto.class);
+        if (!organizationListDto.isSuccess()) {
+            //TODO exceptions
+            throw new Exception(organizationListDto.getErrorDescription());
+        }
+        List<Organization> organizations = new ArrayList<>();
+        for (OrganizationDto dto : organizationListDto.getOrganizations()) {
+            Organization organization = new Organization();
+            organization.setName(dto.getName());
+
+            List<Server> serverList = new ArrayList<>();
+            for (ServerDto serverDto : dto.getServers()) {
+                Server serverObj = new Server();
+                serverObj.setId(serverDto.getServerId());
+                serverObj.setName(serverDto.getName());
+
+                List<Camera> cameraList = new ArrayList<>();
+                for (CameraDto cameraDto : serverDto.getCameras()) {
+                    Camera camera = new Camera();
+                    camera.setCameraId(cameraDto.getCameraId());
+                    camera.setName(cameraDto.getName());
+                    camera.setAnalysisType(cameraDto.getAnalysisType());
+                    camera.setPrimaryAddress(cameraDto.getPrimaryAddress());
+                    camera.setSecondaryAddress(cameraDto.getSecondaryAddress());
+                    camera.setStatus(cameraDto.getStatus());
+                    camera.setStorageDays(cameraDto.getStorageDays());
+                    camera.setStorageId(cameraDto.getStorageId());
+                    camera.setScheduleId(cameraDto.getScheduleId());
+                    camera.setStreamAddress(cameraDto.getStreamAddress());
+
+                    cameraList.add(camera);
+                }
+
+                List<Schedule> scheduleList = new ArrayList<>();
+                for (ScheduleDto scheduleDto : serverDto.getSchedules()) {
+                    Schedule schedule = new Schedule();
+                    schedule.setId(scheduleDto.getId());
+                    schedule.setType(scheduleDto.getType());
+                    schedule.setWeekDays(scheduleDto.getWeekDays());
+                    schedule.setStartTime(scheduleDto.getStartTime());
+                    schedule.setStopTime(scheduleDto.getStopTime());
+                    schedule.setStartTimestamp(scheduleDto.getStartTimestamp());
+                    schedule.setStopTimestamp(scheduleDto.getStopTimestamp());
+
+                    scheduleList.add(schedule);
+                }
+
+                List<Storage> storageList = new ArrayList<>();
+                for (StorageDto storageDto : serverDto.getStorages()) {
+                    Storage storage = new Storage();
+                    storage.setId(storageDto.getId());
+                    storage.setName(storageDto.getName());
+                    storage.setDefaultArchivePath(storageDto.getDefaultArchivePath());
+
+                    storageList.add(storage);
+                }
+                serverObj.setCameras(cameraList);
+                serverObj.setSchedules(scheduleList);
+                serverObj.setStorages(storageList);
+
+                serverList.add(serverObj);
+            }
+
+            organization.setServers(serverList);
+            organizations.add(organization);
+        }
+        return organizations;
     }
 
     @Override
-    public void importConfig(Connection connection, String serverName, List<Organization> organizations) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException {
+    public void importConfig(Connection connection, String serverName, List<Organization> organizations) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         String server = serverName + "/config/import";
         ConfigImportRequest request = new ConfigImportRequest(UUID.randomUUID(), server, "config_import");
         request.setOrganizations(organizations);
-        queueService.send(connection, request);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        if (response.isSuccess()) {
+            return;
+        }
+        //TODO exceptions
+        throw new Exception(response.getErrorDescription());
     }
 
     private void checkConnection(Connection connection) throws WrongConnectionException {
         if (connection == null) {
+            throw new WrongConnectionException("Wrong connection");
+        }
+        if (!(connection instanceof OcularConnection)) {
             throw new WrongConnectionException("Wrong connection");
         }
     }

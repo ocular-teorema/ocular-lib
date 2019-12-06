@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Данный объект содержит информацию о записи камеры:
@@ -8,6 +9,7 @@ import lombok.Getter;
  * размер файла
  */
 @Getter
+@Setter
 public class Record {
 
     private int id;

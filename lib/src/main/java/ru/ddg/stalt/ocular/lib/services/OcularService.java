@@ -99,7 +99,7 @@ public interface OcularService {
      * @param horizontal движение в горизонтальном направлении
      * @param zoom приближение
      */
-    void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws Exception;
 
     /**
      * Возвращает список хранилищ заданного сервера
@@ -107,7 +107,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список хранилищ List<Storage>
      */
-    List<Storage> getStorageList(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    List<Storage> getStorageList(Connection connection, String serverName) throws Exception;
 
     /**
      * Добавляет новое хранилище с заданным именем по заданному пути
@@ -226,7 +226,7 @@ public interface OcularService {
             Integer stopTimestamp,
             List<String> cameras,
             Integer skip,
-            Integer limit) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+            Integer limit) throws Exception;
 
     /**
      * Возвращает список расписаний
@@ -234,7 +234,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список расписаний List<Schedule>
      */
-    List<Schedule> getScheduleList(Connection connection, String serverName) throws IncorrectServerNameException, WrongConnectionException, IOException, TimeoutException;
+    List<Schedule> getScheduleList(Connection connection, String serverName) throws Exception;
 
     /**
      * Возвращает данные конфигурации
@@ -242,7 +242,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список организаций
      */
-    List<Organization> exportConfig(Connection connection, String serverName) throws WrongConnectionException, IncorrectServerNameException, IOException, TimeoutException;
+    List<Organization> exportConfig(Connection connection, String serverName) throws Exception;
 
     /**
      * Импортирует данные конфигурации

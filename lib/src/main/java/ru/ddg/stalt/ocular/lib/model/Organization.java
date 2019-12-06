@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  * имя, списрк серверов
  */
 @Getter
+@Setter
 public class Organization {
 
     private String name;

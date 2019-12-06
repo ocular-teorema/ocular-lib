@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -9,9 +10,10 @@ import java.util.List;
  * идентификатор, имя, список камер, список хранилищ, список расписаний
  */
 @Getter
+@Setter
 public class Server {
 
-    private int id;
+    private String id;
 
     private String name;
 
