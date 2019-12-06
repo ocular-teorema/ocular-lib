@@ -1,16 +1,17 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.ddg.stalt.ocular.lib.impl.contracts.Response;
+import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
+import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 
 import java.io.IOException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeoutException;
 
 @Component
@@ -31,11 +32,11 @@ public class QueueService {
 
     }
 
-    public Response send(Connection connection, BaseRequest request) throws IOException, TimeoutException {
+    public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, TimeoutException {
         byte[] json = objectMapper.writeValueAsBytes(request);
 
-        try (Channel channel = connection.createChannel()) {
-            channel.basicPublish("", request.getServer(), null, json);
+        try (Channel channel = ocularConnection.getConnection().createChannel()) {
+            channel.basicPublish(request.getServer(), "", null, json);
         }
         return null;
     }

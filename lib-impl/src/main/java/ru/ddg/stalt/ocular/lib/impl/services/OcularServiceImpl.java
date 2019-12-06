@@ -1,11 +1,11 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
-import com.rabbitmq.client.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.*;
+import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
 
@@ -19,9 +19,10 @@ public class OcularServiceImpl implements OcularService {
     private QueueService queueService;
 
     @Override
-    public Connection connect(String address, int port, String username, String password) throws IOException, TimeoutException {
+    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException {
         // TODO
-        return queueService.createConnection(address, port, username, password);
+         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
+         return new OcularConnection(connection, responseTimeout);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class OcularServiceImpl implements OcularService {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),server,"status");
 
-        Response response = queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send((OcularConnection) connection, baseRequest);
         //TODO
         return null;
     }
@@ -115,7 +116,7 @@ public class OcularServiceImpl implements OcularService {
 
         String server = serverName + "/cameras/list";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "cameras_list");
-        Response response = queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send(connection, baseRequest);
         //TODO
         return null;
     }
@@ -158,7 +159,7 @@ public class OcularServiceImpl implements OcularService {
 
         String server = serverName + "/storages/list";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "storage_list");
-        Response response = queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send(connection, baseRequest);
         //TODO
         return null;
     }
@@ -330,7 +331,7 @@ public class OcularServiceImpl implements OcularService {
         request.setLimit(limit);
         request.setSkip(skip);
 
-        Response response = queueService.send(connection, request);
+        BaseResponse response = queueService.send(connection, request);
         //TODO
         return null;
     }
@@ -342,7 +343,7 @@ public class OcularServiceImpl implements OcularService {
 
         String server = serverName + "/schedules/list/request";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "schedule_list_request_message");
-        Response response = queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send(connection, baseRequest);
         //TODO
         return null;
     }
@@ -354,7 +355,7 @@ public class OcularServiceImpl implements OcularService {
 
         String server = serverName + "/config/export";
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), server, "config_export");
-        Response response = queueService.send(connection, baseRequest);
+        BaseResponse response = queueService.send(connection, baseRequest);
         //TODO
         return null;
     }

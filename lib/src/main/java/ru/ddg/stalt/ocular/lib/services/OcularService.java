@@ -1,6 +1,5 @@
 package ru.ddg.stalt.ocular.lib.services;
 
-import com.rabbitmq.client.Connection;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.model.*;
