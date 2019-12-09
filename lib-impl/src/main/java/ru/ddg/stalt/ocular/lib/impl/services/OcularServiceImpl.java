@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+@Service
 public class OcularServiceImpl implements OcularService {
     @Autowired
     private QueueService queueService;
