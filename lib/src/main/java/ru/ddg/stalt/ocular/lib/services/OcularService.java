@@ -1,5 +1,6 @@
 package ru.ddg.stalt.ocular.lib.services;
 
+import ru.ddg.stalt.ocular.lib.exceptions.DuplicateDriverIdException;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.model.*;
@@ -21,14 +22,14 @@ public interface OcularService {
      * @throws IOException ошибка ввода-вывода
      * @throws TimeoutException истекло время ожидания
      */
-    Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException;
+    Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException;
 
     /**
      * Отключение от очереди
      * @param connection объект соединения
      * @throws IOException ошибка ввода-вывода
      */
-    void disconnect(Connection connection) throws IOException;
+    void disconnect(Connection connection) throws IOException, TimeoutException;
 
     /**
      * Возвращает информацию о сервере

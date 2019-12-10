@@ -2,6 +2,7 @@ package ru.ddg.stalt.ocular.lib.impl.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.ddg.stalt.ocular.lib.exceptions.DuplicateDriverIdException;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
@@ -25,7 +26,7 @@ public class OcularServiceImpl implements OcularService {
     private ResponseService responseService;
 
     @Override
-    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException {
+    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException {
         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
         // TODO: add driverId
         responseService.subscribe("1", connection);
@@ -33,8 +34,10 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void disconnect(Connection connection) throws IOException {
+    public void disconnect(Connection connection) throws IOException, TimeoutException {
         OcularConnection ocularConnection = (OcularConnection) connection;
+        //TODO driverId
+        responseService.unsubscribe("1");
         ocularConnection.getConnection().close();
     }
 

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Component
 public class ResponseService {
-    private final static String RESPONSE_EXCHANGE = "driver";
+    private final static String RESPONSE_EXCHANGE = "/ocular/448A5B2C2B54";
 
     @Autowired
     private RequestRegistry requestRegistry;
@@ -38,9 +38,9 @@ public class ResponseService {
             channel.close();
             throw new DuplicateDriverIdException(driverId);
         }
-        channel.exchangeDeclare(RESPONSE_EXCHANGE, BuiltinExchangeType.DIRECT);
+        channel.exchangeDeclare(RESPONSE_EXCHANGE, BuiltinExchangeType.TOPIC);
         channel.queueDeclare(queueName, true, false, true, null);
-        channel.queueBind(queueName, RESPONSE_EXCHANGE, null);
+        channel.queueBind(queueName, RESPONSE_EXCHANGE, "");
         channel.basicConsume(queueName, true, driverId, consumer);
         log.info("Subscribe to queue {}.", queueName);
         channel.basicRecover();
@@ -88,7 +88,7 @@ public class ResponseService {
 
         @Override
         public void handleCancel(String consumerTag) throws IOException {
-
+log.info("got cancel");
         }
 
         @Override
@@ -103,11 +103,12 @@ public class ResponseService {
 
         @Override
         public void handleRecoverOk(String consumerTag) {
-
+log.info("got ok tag is " + consumerTag);
         }
 
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+            log.info("got object " + body);
             if (!subscriptions.contains(consumerTag)) {
                 log.warn("Message received for unknown tag {}. Skip it.", consumerTag);
                 return;
