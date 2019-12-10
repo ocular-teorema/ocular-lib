@@ -112,12 +112,19 @@ public class ResponseService {
                 log.warn("Message received for unknown tag {}. Skip it.", consumerTag);
                 return;
             }
-            BaseResponse response = objectMapper.readValue(body, BaseResponse.class);
+            BaseResponse response;
+            try {
+                response = objectMapper.readValue(body, BaseResponse.class);
+            }
+            catch (Exception e) {
+                log.warn("Impossible to parse message:\n{}.", new String(body, StandardCharsets.US_ASCII), e);
+                return;
+            }
             try {
                 requestRegistry.response(response.getRequestUuid(), response);
             }
             catch (RequestNotFoundException e) {
-                log.warn("There was no request {}, but response are received:\n{}", response.getRequestUuid(), new String(body, StandardCharsets.UTF_8), e);
+                log.warn("There was no request {}, but response are received:\n{}", response.getRequestUuid(), new String(body, StandardCharsets.US_ASCII), e);
             }
         }
     };
