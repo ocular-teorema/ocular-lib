@@ -28,7 +28,7 @@ public class OcularServiceImpl implements OcularService {
     public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException {
         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
         // TODO: add driverId
-        responseService.listenResponses("1", connection);
+        responseService.subscribe("1", connection);
         return new OcularConnection(connection, responseTimeout);
     }
 
