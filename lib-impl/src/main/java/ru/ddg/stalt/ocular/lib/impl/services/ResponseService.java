@@ -39,8 +39,11 @@ public class ResponseService {
             throw new DuplicateDriverIdException(driverId);
         }
         channel.exchangeDeclare(RESPONSE_EXCHANGE, BuiltinExchangeType.DIRECT);
+        log.info("Ensure exchange {}.", RESPONSE_EXCHANGE);
         channel.queueDeclare(queueName, true, false, false, null);
+        log.info("Ensure queue {}.", queueName);
         channel.queueBind(queueName, RESPONSE_EXCHANGE, "");
+        log.info("Bind queue {} with exchange {}.", queueName, RESPONSE_EXCHANGE);
         channel.basicConsume(queueName, true, driverId, consumer);
         log.info("Subscribe to queue {}.", queueName);
         channel.basicRecover();
@@ -54,6 +57,7 @@ public class ResponseService {
         }
         subscription.channel.basicCancel(subscription.driverId);
         subscription.channel.close();
+        log.info("Unsubscribe for driver {}.", driverId);
     }
 
     private void unsubscribeSilent(String driverId) {
@@ -107,7 +111,8 @@ public class ResponseService {
         }
 
         @Override
-        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
+            log.trace("Receive data in consumer {}. Length {}.", consumerTag, body.length);
             if (!subscriptions.contains(consumerTag)) {
                 log.warn("Message received for unknown tag {}. Skip it.", consumerTag);
                 return;
@@ -115,6 +120,7 @@ public class ResponseService {
             BaseResponse response;
             try {
                 response = objectMapper.readValue(body, BaseResponse.class);
+                log.trace("Object {} parsed.", response);
             }
             catch (Exception e) {
                 log.warn("Impossible to parse message:\n{}.", new String(body, StandardCharsets.US_ASCII), e);
@@ -122,6 +128,7 @@ public class ResponseService {
             }
             try {
                 requestRegistry.response(response.getRequestUuid(), response);
+                log.trace("Response handled for request {}.", response.getRequestUuid());
             }
             catch (RequestNotFoundException e) {
                 log.warn("There was no request {}, but response are received:\n{}", response.getRequestUuid(), new String(body, StandardCharsets.US_ASCII), e);
