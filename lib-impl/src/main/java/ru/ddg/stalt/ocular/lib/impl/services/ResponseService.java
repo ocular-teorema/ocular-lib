@@ -2,6 +2,7 @@ package ru.ddg.stalt.ocular.lib.impl.services;
 
 import com.rabbitmq.client.*;
 import com.sun.tools.corba.se.idl.constExpr.Or;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +27,16 @@ public class ResponseService {
     private final ConcurrentHashMap<String, Subscription> subscriptions = new ConcurrentHashMap<>();
 
     public void subscribe(@NonNull String driverId, @NonNull Connection connection) throws IOException, TimeoutException, DuplicateDriverIdException {
-        if (subscriptions.contains(driverId)) {
+        final Channel channel = connection.createChannel();
+        final String queueName = "driver.v1." + driverId;
+        final Subscription exists = subscriptions.putIfAbsent(driverId, new Subscription(channel, driverId, queueName));
+        if (exists != null) {
+            channel.close();
             throw new DuplicateDriverIdException(driverId);
         }
-        final Channel channel = connection.createChannel();
         channel.exchangeDeclare(RESPONSE_EXCHANGE, BuiltinExchangeType.DIRECT);
-        String queueName = "driver.v1." + driverId;
         channel.queueDeclare(queueName, true, false, true, null);
-        channel.exchangeBind(RESPONSE_EXCHANGE, queueName, driverId);
+        channel.queueBind(queueName, RESPONSE_EXCHANGE, null);
         channel.basicConsume(queueName, true, driverId, consumer);
     }
 
@@ -42,6 +45,7 @@ public class ResponseService {
         if (subscription == null) {
             return;
         }
+        subscription.channel.basicCancel(subscription.driverId);
         subscription.channel.close();
     }
 
@@ -67,7 +71,12 @@ public class ResponseService {
 
         @Override
         public void handleCancelOk(String consumerTag) {
-
+            try {
+                unsubscribe(consumerTag);
+            }
+            catch (IOException | TimeoutException e) {
+                log.warn("Consumer canceled by queue.", e);
+            }
         }
 
         @Override
@@ -91,8 +100,10 @@ public class ResponseService {
         }
     };
 
+    @AllArgsConstructor
     private static class Subscription {
         Channel channel;
         String driverId;
+        String queueName;
     }
 }
