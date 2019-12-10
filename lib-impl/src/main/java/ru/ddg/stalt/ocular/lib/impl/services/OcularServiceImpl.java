@@ -6,7 +6,6 @@ import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
 import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.*;
-import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
@@ -22,15 +21,20 @@ public class OcularServiceImpl implements OcularService {
     @Autowired
     private QueueService queueService;
 
+    @Autowired
+    private ResponseService responseService;
+
     @Override
     public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException {
-         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
-         return new OcularConnection(connection, responseTimeout);
+        com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
+        // TODO: add driverId
+        responseService.listenResponses("1", connection);
+        return new OcularConnection(connection, responseTimeout);
     }
 
     @Override
     public void disconnect(Connection connection) throws IOException {
-        OcularConnection ocularConnection = (OcularConnection)connection;
+        OcularConnection ocularConnection = (OcularConnection) connection;
         ocularConnection.getConnection().close();
     }
 
@@ -39,7 +43,7 @@ public class OcularServiceImpl implements OcularService {
         checkConnection(connection);
         checkServerName(serverName);
 
-        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(),serverName,"status");
+        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "status");
 
         ServerStateDto serverStateDto = queueService.send((OcularConnection) connection, baseRequest, ServerStateDto.class);
         if (!serverStateDto.isSuccess()) {
@@ -58,7 +62,7 @@ public class OcularServiceImpl implements OcularService {
         hardwareInfo.setLoadAverage(serverStateDto.getHardware().getLoadAverage());
 
         List<ServiceState> services = new ArrayList<>();
-        for (ServiceStateDto dto: serverStateDto.getServices()) {
+        for (ServiceStateDto dto : serverStateDto.getServices()) {
             ServiceState serviceState = new ServiceState();
             serviceState.setName(dto.getName());
             serviceState.setStatus(dto.getStatus());
@@ -79,7 +83,7 @@ public class OcularServiceImpl implements OcularService {
             cameraStates.add(cameraState);
         }
 
-        return new ServerState(hardwareInfo,services,cameraStates);
+        return new ServerState(hardwareInfo, services, cameraStates);
     }
 
     @Override
@@ -88,7 +92,7 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "reset_request");
 
-        BaseResponse response = queueService.send((OcularConnection)connection,baseRequest, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
         if (response.isSuccess()) {
             return;
         }
@@ -112,8 +116,8 @@ public class OcularServiceImpl implements OcularService {
         CameraRequest addCameraRequest = new CameraRequest(UUID.randomUUID(), serverName, "cameras_add");
         addCameraRequest.setCameraDto(cameraDto);
 
-        BaseResponse response = queueService.send((OcularConnection)connection, addCameraRequest, BaseResponse.class);
-        if(response.isSuccess()) {
+        BaseResponse response = queueService.send((OcularConnection) connection, addCameraRequest, BaseResponse.class);
+        if (response.isSuccess()) {
             return;
         }
         //TODO exceptions
@@ -126,7 +130,7 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "cameras_delete");
-        BaseResponse response = queueService.send((OcularConnection)connection, baseRequest, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
         if (response.isSuccess()) {
             return;
         }
@@ -153,7 +157,7 @@ public class OcularServiceImpl implements OcularService {
 
         request.setCameraDto(dto);
 
-        BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
         if (response.isSuccess()) {
             return;
         }
@@ -167,7 +171,7 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "cameras_list");
-        CameraListDto cameraListDto = queueService.send((OcularConnection)connection, baseRequest, CameraListDto.class);
+        CameraListDto cameraListDto = queueService.send((OcularConnection) connection, baseRequest, CameraListDto.class);
         if (!cameraListDto.isSuccess()) {
             //TODO exceptions
             throw new Exception(cameraListDto.getErrorDescription());
@@ -188,7 +192,7 @@ public class OcularServiceImpl implements OcularService {
         RecordingRequest recordingRequest = new RecordingRequest(UUID.randomUUID(), serverName, "cameras_set_recording");
         recordingRequest.setCameraId(camera.getCameraId());
         recordingRequest.setIsRecording(isRecording);
-        BaseResponse response = queueService.send((OcularConnection)connection, recordingRequest, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, recordingRequest, BaseResponse.class);
 
         if (response.isSuccess()) {
             return;
@@ -205,9 +209,9 @@ public class OcularServiceImpl implements OcularService {
 
         if (vertical != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, vertical);
-            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName,"cameras_ptz_move_vertical");
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName, "cameras_ptz_move_vertical");
             request.setPtzControl(ptzControlDto);
-            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
             if (response.isSuccess()) {
                 return;
             }
@@ -216,9 +220,9 @@ public class OcularServiceImpl implements OcularService {
         }
         if (horizontal != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, horizontal);
-            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName,"cameras_ptz_move_horizontal");
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName, "cameras_ptz_move_horizontal");
             request.setPtzControl(ptzControlDto);
-            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
             if (response.isSuccess()) {
                 return;
             }
@@ -227,9 +231,9 @@ public class OcularServiceImpl implements OcularService {
         }
         if (zoom != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, zoom);
-            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName,"cameras_ptz_zoom");
+            PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName, "cameras_ptz_zoom");
             request.setPtzControl(ptzControlDto);
-            BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+            BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
             if (response.isSuccess()) {
                 return;
             }
@@ -244,7 +248,7 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "storage_list");
-        StorageListDto storageListDto = queueService.send((OcularConnection)connection, baseRequest, StorageListDto.class);
+        StorageListDto storageListDto = queueService.send((OcularConnection) connection, baseRequest, StorageListDto.class);
         if (!storageListDto.isSuccess()) {
             //TODO exceptions
             throw new Exception(storageListDto.getErrorDescription());
@@ -271,7 +275,7 @@ public class OcularServiceImpl implements OcularService {
         StorageRequest addStorageRequest = new StorageRequest(UUID.randomUUID(), serverName, "storage_add");
         addStorageRequest.setStorageDto(storageDto);
 
-        BaseResponse response = queueService.send((OcularConnection)connection, addStorageRequest, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, addStorageRequest, BaseResponse.class);
         if (response.isSuccess()) {
             return;
         }
@@ -389,7 +393,7 @@ public class OcularServiceImpl implements OcularService {
         ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName, "schedule_update");
         request.setScheduleDto(dto);
 
-        BaseResponse response = queueService.send((OcularConnection)connection, request, BaseResponse.class);
+        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
         if (response.isSuccess()) {
             return;
         }
@@ -494,7 +498,7 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName, "schedule_list");
-        ScheduleListDto scheduleListDto = queueService.send((OcularConnection)connection, baseRequest, ScheduleListDto.class);
+        ScheduleListDto scheduleListDto = queueService.send((OcularConnection) connection, baseRequest, ScheduleListDto.class);
         if (!scheduleListDto.isSuccess()) {
             //TODO exceptions
             throw new Exception(scheduleListDto.getErrorDescription());

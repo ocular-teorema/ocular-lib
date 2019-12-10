@@ -36,7 +36,6 @@ public class QueueService {
         connectionFactory.setPassword(password);
         connectionFactory.setVirtualHost(VHOST);
         return connectionFactory.newConnection();
-
     }
 
     public <T extends BaseResponse> T send(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws ResponseTimeoutException {
