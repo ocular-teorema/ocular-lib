@@ -174,13 +174,13 @@ public class OcularServiceImpl implements OcularService {
         checkServerName(serverName);
 
         CameraListRequest baseRequest = new CameraListRequest(UUID.randomUUID(), serverName);
-        CameraListDto cameraListDto = queueService.send((OcularConnection) connection, baseRequest, CameraListDto.class);
-        if (!cameraListDto.isSuccess()) {
+        CameraListResponse cameraListResponse = queueService.send((OcularConnection) connection, baseRequest, CameraListResponse.class);
+        if (!cameraListResponse.isSuccess()) {
             //TODO exceptions
-            throw new Exception(cameraListDto.getErrorDescription());
+            throw new Exception(cameraListResponse.getErrorDescription());
         }
         List<Camera> cameras = new ArrayList<>();
-        for (CameraDto dto : cameraListDto.getCameras()) {
+        for (CameraDto dto : cameraListResponse.getData()) {
             Camera camera = convertCamera(dto);
             cameras.add(camera);
         }

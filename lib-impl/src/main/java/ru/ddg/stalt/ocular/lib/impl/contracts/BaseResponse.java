@@ -13,13 +13,13 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ServerStateDto.class, name = "status"),
         @JsonSubTypes.Type(value = RecordListDto.class, name = "archive_video"),
-        @JsonSubTypes.Type(value = CameraListDto.class, name = "camera_list"),
+        @JsonSubTypes.Type(value = CameraListResponse.class, name = "camera_list"),
         @JsonSubTypes.Type(value = StorageListDto.class, name = "storage_list"),
         @JsonSubTypes.Type(value = ScheduleListDto.class, name = "schedule_list"),
         @JsonSubTypes.Type(value = OrganizationListDto.class, name = "config_export"),
-        @JsonSubTypes.Type(value = RecordDto.class, name = "archive_video")
+        @JsonSubTypes.Type(value = RecordResponse.class, name = "archive_video")
 })
-public class BaseResponse {
+public class BaseResponse<T> {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID requestUuid;
@@ -29,4 +29,6 @@ public class BaseResponse {
     private Integer errorCode;
     @JsonProperty("error")
     private String errorDescription;
+
+    private T data;
 }
