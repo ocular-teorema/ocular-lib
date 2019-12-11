@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class OcularServiceImpl implements OcularService {
@@ -27,7 +28,7 @@ public class OcularServiceImpl implements OcularService {
     private ResponseService responseService;
 
     @Override
-    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException {
+    public Connection connect(String address, int port, String username, String password, long responseTimeout, AtomicReference<>) throws IOException, TimeoutException, DuplicateDriverIdException {
         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
         // TODO: add driverId
         responseService.subscribe("1", connection);
@@ -584,6 +585,13 @@ public class OcularServiceImpl implements OcularService {
         }
         //TODO exceptions
         throw new Exception(response.getErrorDescription());
+    }
+
+    @Override
+    public EventHandler setEventHandler(Connection connection, EventHandler eventHandler) {
+        OcularConnection ocularConnection = (OcularConnection)connection;
+        ocularConnection.setEventHandler(new AtomicReference<>(eventHandler));
+        return null;
     }
 
     private void checkConnection(Connection connection) throws WrongConnectionException {
