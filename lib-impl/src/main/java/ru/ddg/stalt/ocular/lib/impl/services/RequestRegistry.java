@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.ddg.stalt.ocular.lib.exceptions.ErrorResponseException;
+import ru.ddg.stalt.ocular.lib.impl.contracts.ErrorDto;
 import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
+import ru.ddg.stalt.ocular.lib.impl.contracts.responses.ErrorResponse;
 import ru.ddg.stalt.ocular.lib.impl.exceptions.DuplicateRequestException;
 import ru.ddg.stalt.ocular.lib.impl.exceptions.RequestNotFoundException;
 import ru.ddg.stalt.ocular.lib.impl.model.RegistryItem;
@@ -25,13 +28,14 @@ public class RequestRegistry {
     @Autowired
     private TimeService timeService;
 
-    public <T extends BaseResponse> void register(UUID uuid, CompletableFuture<T> future, Class<T> responseClass) throws DuplicateRequestException {
+    public <T extends BaseResponse> void register(UUID uuid, CompletableFuture<T> future, Class<T> responseClass, Class requestClass) throws DuplicateRequestException {
         final LocalDateTime now = timeService.getUTC();
         final RegistryItem item = registry.putIfAbsent(uuid, new RegistryItem<>(
                 uuid,
                 future,
                 responseClass,
-                now
+                now,
+                requestClass
         ));
 
         if (item != null) {
@@ -54,6 +58,14 @@ public class RequestRegistry {
         RegistryItem<T> registryItem = registry.remove(uuid);
         if (registryItem == null) {
             throw new RequestNotFoundException("There is not request in registry for uuid " + uuid);
+        }
+        if (response instanceof ErrorResponse) {
+            ErrorDto error = ((ErrorResponse) response).getData();
+            registryItem.getCompletableFuture().completeExceptionally(new ErrorResponseException(
+                    registryItem.getRequestClass(),
+                    error.getErrorCode(),
+                    error.getErrorDescription()
+            ));
         }
         if (!registryItem.getResponseClass().isAssignableFrom(response.getClass())) {
             throw new ClassCastException("Response class does not corresponds with request. Response " + response.getClass() + ", but expected " + registryItem.getResponseClass());

@@ -23,16 +23,8 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = ErrorResponse.class, name = "error")
 })
 public class BaseResponse<T> {
-
     @JsonProperty("uuid")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID requestUuid;
-
-    private boolean success;
-    @JsonProperty("code")
-    private Integer errorCode;
-    @JsonProperty("error")
-    private String errorDescription;
-
     private T data;
 }

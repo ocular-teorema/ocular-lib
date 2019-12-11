@@ -15,4 +15,5 @@ public class RegistryItem<T extends BaseResponse> {
     private final CompletableFuture<T> completableFuture;
     private final Class<T> responseClass;
     private final LocalDateTime expiredAt;
+    private final Class requestClass;
 }

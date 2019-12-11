@@ -7,8 +7,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ddg.stalt.ocular.lib.exceptions.ResponseTimeoutException;
-import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.BaseRequest;
+import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.exceptions.DuplicateRequestException;
 import ru.ddg.stalt.ocular.lib.impl.model.OcularConnection;
 

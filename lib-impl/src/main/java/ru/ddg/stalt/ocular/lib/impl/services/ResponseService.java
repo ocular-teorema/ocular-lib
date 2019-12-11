@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ddg.stalt.ocular.lib.exceptions.DuplicateDriverIdException;
-import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
+import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
 import ru.ddg.stalt.ocular.lib.impl.exceptions.RequestNotFoundException;
 
 import javax.annotation.PreDestroy;
