@@ -113,7 +113,7 @@ public class ResponseService {
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
             log.trace("Receive data in consumer {}. Length {}.", consumerTag, body.length);
-            if (!subscriptions.contains(consumerTag)) {
+            if (!subscriptions.containsKey(consumerTag)) {
                 log.warn("Message received for unknown tag {}. Skip it.", consumerTag);
                 return;
             }
