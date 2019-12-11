@@ -589,9 +589,7 @@ public class OcularServiceImpl implements OcularService {
 
     @Override
     public EventHandler setEventHandler(Connection connection, EventHandler eventHandler) {
-        OcularConnection ocularConnection = (OcularConnection)connection;
-        ocularConnection.setEventHandler(new AtomicReference<>(eventHandler));
-        return null;
+        return ((OcularConnection)connection).getEventHandler().getAndSet(eventHandler);
     }
 
     private void checkConnection(Connection connection) throws WrongConnectionException {

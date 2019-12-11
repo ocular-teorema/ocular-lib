@@ -14,6 +14,6 @@ public class OcularConnection implements Connection {
     private final com.rabbitmq.client.Connection connection;
     private final long timeout;
     @Setter
-    private AtomicReference<EventHandler> eventHandler;
+    private final AtomicReference<EventHandler> eventHandler = new AtomicReference<>();
 
 }
