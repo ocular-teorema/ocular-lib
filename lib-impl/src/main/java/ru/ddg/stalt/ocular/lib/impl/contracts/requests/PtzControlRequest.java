@@ -11,7 +11,7 @@ import java.util.UUID;
 public class PtzControlRequest extends BaseRequest {
     private PtzControlDto ptzControl;
 
-    public PtzControlRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public PtzControlRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

@@ -16,7 +16,7 @@ public class ScheduleRequest extends BaseRequest {
 
     private ScheduleDto scheduleDto;
 
-    public ScheduleRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public ScheduleRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

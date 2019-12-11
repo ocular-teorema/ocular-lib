@@ -13,7 +13,7 @@ public class ImportConfigRequest extends BaseRequest {
 
     private List<OrganizationDto> organizations;
 
-    public ImportConfigRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public ImportConfigRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

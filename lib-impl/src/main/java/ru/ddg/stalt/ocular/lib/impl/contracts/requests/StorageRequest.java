@@ -16,7 +16,7 @@ public class StorageRequest extends BaseRequest {
 
     private StorageDto storageDto;
 
-    public StorageRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public StorageRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

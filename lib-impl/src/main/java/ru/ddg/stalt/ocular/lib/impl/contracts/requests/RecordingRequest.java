@@ -19,7 +19,7 @@ public class RecordingRequest extends BaseRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isRecording;
 
-    public RecordingRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public RecordingRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

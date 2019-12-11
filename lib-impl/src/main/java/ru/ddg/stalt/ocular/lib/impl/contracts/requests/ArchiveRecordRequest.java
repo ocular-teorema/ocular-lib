@@ -28,7 +28,7 @@ public class ArchiveRecordRequest extends BaseRequest {
 
     private Integer limit;
 
-    public ArchiveRecordRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public ArchiveRecordRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }

@@ -14,7 +14,7 @@ public class ConfigImportRequest extends BaseRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Organization> organizations;
 
-    public ConfigImportRequest(UUID uuid, String server, String type) {
-        super(uuid, server, type);
+    public ConfigImportRequest(UUID uuid, String server) {
+        super(uuid, server);
     }
 }
