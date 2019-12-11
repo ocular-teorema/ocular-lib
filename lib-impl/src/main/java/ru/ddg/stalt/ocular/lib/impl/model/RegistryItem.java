@@ -2,7 +2,7 @@ package ru.ddg.stalt.ocular.lib.impl.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import ru.ddg.stalt.ocular.lib.impl.contracts.BaseResponse;
+import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

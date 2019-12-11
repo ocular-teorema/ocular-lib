@@ -1,6 +1,7 @@
 package ru.ddg.stalt.ocular.lib.impl.contracts;
 
 import lombok.Getter;
+import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
 
 import java.util.List;
 
