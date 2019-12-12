@@ -280,7 +280,7 @@ public class OcularServiceImpl implements OcularService {
         ScheduleDto dto = new ScheduleDto();
         dto.setType("timestamp");
         dto.setStartTimestamp(startTimestamp);
-        dto.setStartTimestamp(stopTimestamp);
+        dto.setStopTimestamp(stopTimestamp);
 
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
@@ -430,7 +430,7 @@ public class OcularServiceImpl implements OcularService {
             schedule.setStopTime(scheduleDto.getStopTime());
             return schedule;
         }).collect(Collectors.toList());
-        scheduleMap.put(ScheduleTypeEnum.TIMESTAMP, timePeriod);
+        scheduleMap.put(ScheduleTypeEnum.TIMEPERIOD, timePeriod);
 
         return scheduleMap;
     }
