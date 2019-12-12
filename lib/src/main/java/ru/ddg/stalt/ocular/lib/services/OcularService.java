@@ -18,11 +18,12 @@ public interface OcularService {
      * @param username        имя пользователя
      * @param password        пароль
      * @param responseTimeout время ожидания
+     * @param driverId
      * @return объект соединения
      * @throws IOException      ошибка ввода-вывода
      * @throws TimeoutException истекло время ожидания
      */
-    Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException;
+    Connection connect(String address, int port, String username, String password, long responseTimeout, String driverId) throws IOException, TimeoutException, DuplicateDriverIdException;
 
     /**
      * Отключение от очереди

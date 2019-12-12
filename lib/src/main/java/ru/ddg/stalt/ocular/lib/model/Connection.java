@@ -1,4 +1,4 @@
 package ru.ddg.stalt.ocular.lib.model;
 
-public interface Connection {
+public interface Connection extends AutoCloseable {
 }

@@ -26,18 +26,16 @@ public class OcularServiceImpl implements OcularService {
     private ResponseService responseService;
 
     @Override
-    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException {
+    public Connection connect(String address, int port, String username, String password, long responseTimeout, String driverId) throws IOException, TimeoutException, DuplicateDriverIdException {
         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
-        // TODO: add driverId
-        responseService.subscribe("1", connection);
-        return new OcularConnection(connection, responseTimeout);
+        responseService.subscribe(driverId, connection);
+        return new OcularConnection(driverId, connection, responseTimeout, this);
     }
 
     @Override
     public void disconnect(Connection connection) throws IOException, TimeoutException {
         OcularConnection ocularConnection = (OcularConnection) connection;
-        //TODO driverId
-        responseService.unsubscribe("1");
+        responseService.unsubscribe(ocularConnection.getDriverId());
         ocularConnection.getConnection().close();
     }
 
