@@ -1,25 +1,23 @@
 package ru.ddg.stalt.ocular.lib.impl.contracts.requests;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import ru.ddg.stalt.ocular.lib.impl.contracts.CameraDto;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-public class RecordingRequest extends BaseRequest {
+public class UpdateCameraRequest extends BaseRequest {
 
     @JsonProperty("camera_id")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cameraId;
 
     @JsonProperty("data")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Boolean isRecording;
+    private CameraDto camera;
 
-    public RecordingRequest(UUID uuid, String server) {
+    public UpdateCameraRequest(UUID uuid, String server) {
         super(uuid, server);
     }
 }

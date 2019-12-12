@@ -19,7 +19,12 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = CameraListRequest.class, name = "cameras_list"),
         @JsonSubTypes.Type(value = StorageListRequest.class, name = "storages_list"),
         @JsonSubTypes.Type(value = ConfigImportRequest.class, name = "config_import"),
-        @JsonSubTypes.Type(value = ScheduleListRequest.class, name = "schedules_list")
+        @JsonSubTypes.Type(value = ScheduleListRequest.class, name = "schedules_list"),
+        @JsonSubTypes.Type(value = AddCameraRequest.class, name = "cameras_add"),
+        @JsonSubTypes.Type(value = RecordingRequest.class, name = "cameras_set_recording"),
+        @JsonSubTypes.Type(value = AddScheduleRequest.class, name = "schedules_add"),
+        @JsonSubTypes.Type(value = UpdateScheduleRequest.class, name = "schedules_update"),
+        @JsonSubTypes.Type(value = UpdateCameraRequest.class, name = "cameras_update")
 })
 public class BaseRequest {
     @JsonProperty("uuid")

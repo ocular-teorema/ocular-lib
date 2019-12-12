@@ -9,14 +9,11 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class CameraRequest extends BaseRequest {
+public class AddCameraRequest extends BaseRequest {
 
-    @JsonProperty("camera_id")
-    private String cameraId;
+    private CameraDto data;
 
-    private CameraDto cameraDto;
-
-    public CameraRequest(UUID uuid, String server) {
+    public AddCameraRequest(UUID uuid, String server) {
         super(uuid, server);
     }
 }

@@ -9,14 +9,15 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ScheduleRequest extends BaseRequest {
+public class UpdateScheduleRequest extends BaseRequest {
 
     @JsonProperty("schedule_id")
     private Integer scheduleId;
 
+    @JsonProperty("data")
     private ScheduleDto scheduleDto;
 
-    public ScheduleRequest(UUID uuid, String server) {
+    public UpdateScheduleRequest(UUID uuid, String server) {
         super(uuid, server);
     }
 }

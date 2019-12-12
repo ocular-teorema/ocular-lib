@@ -13,11 +13,9 @@ import ru.ddg.stalt.ocular.lib.model.*;
 import ru.ddg.stalt.ocular.lib.services.OcularService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class OcularServiceImpl implements OcularService {
@@ -28,7 +26,7 @@ public class OcularServiceImpl implements OcularService {
     private ResponseService responseService;
 
     @Override
-    public Connection connect(String address, int port, String username, String password, long responseTimeout, AtomicReference<>) throws IOException, TimeoutException, DuplicateDriverIdException {
+    public Connection connect(String address, int port, String username, String password, long responseTimeout) throws IOException, TimeoutException, DuplicateDriverIdException {
         com.rabbitmq.client.Connection connection = queueService.createConnection(address, port, username, password);
         // TODO: add driverId
         responseService.subscribe("1", connection);
@@ -51,10 +49,6 @@ public class OcularServiceImpl implements OcularService {
         ServerStatusRequest stateRequest = new ServerStatusRequest(UUID.randomUUID(), serverName);
 
         ServerStateDto serverStateDto = queueService.send((OcularConnection) connection, stateRequest, ServerStateDto.class);
-        if (!serverStateDto.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(serverStateDto.getErrorDescription());
-        }
 
         ServerHardwareInfo hardwareInfo = new ServerHardwareInfo();
 
@@ -98,11 +92,6 @@ public class OcularServiceImpl implements OcularService {
         ResetServerRequest resetRequest = new ResetServerRequest(UUID.randomUUID(), serverName);
 
         BaseResponse response = queueService.send((OcularConnection) connection, resetRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     public void addCamera(Connection connection, Camera camera, String serverName) throws Exception {
@@ -118,15 +107,10 @@ public class OcularServiceImpl implements OcularService {
         cameraDto.setScheduleId(camera.getScheduleId());
         cameraDto.setStorageId(camera.getStorageId());
 
-        CameraRequest addCameraRequest = new CameraRequest(UUID.randomUUID(), serverName);
-        addCameraRequest.setCameraDto(cameraDto);
+        AddCameraRequest addCameraRequest = new AddCameraRequest(UUID.randomUUID(), serverName);
+        addCameraRequest.setData(cameraDto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, addCameraRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -136,11 +120,6 @@ public class OcularServiceImpl implements OcularService {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
         BaseResponse response = queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -148,7 +127,7 @@ public class OcularServiceImpl implements OcularService {
         checkConnection(connection);
         checkServerName(serverName);
 
-        CameraRequest request = new CameraRequest(UUID.randomUUID(), serverName);
+        UpdateCameraRequest request = new UpdateCameraRequest(UUID.randomUUID(), serverName);
         request.setCameraId(camera.getCameraId());
 
         CameraDto dto = new CameraDto();
@@ -160,14 +139,9 @@ public class OcularServiceImpl implements OcularService {
         dto.setStorageId(camera.getStorageId());
         dto.setScheduleId(camera.getScheduleId());
 
-        request.setCameraDto(dto);
+        request.setCamera(dto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -177,10 +151,6 @@ public class OcularServiceImpl implements OcularService {
 
         CameraListRequest baseRequest = new CameraListRequest(UUID.randomUUID(), serverName);
         CameraListResponse cameraListResponse = queueService.send((OcularConnection) connection, baseRequest, CameraListResponse.class);
-        if (!cameraListResponse.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(cameraListResponse.getErrorDescription());
-        }
         List<Camera> cameras = new ArrayList<>();
         for (CameraDto dto : cameraListResponse.getData()) {
             Camera camera = convertCamera(dto);
@@ -199,12 +169,6 @@ public class OcularServiceImpl implements OcularService {
         recordingRequest.setIsRecording(isRecording);
         BaseResponse response = queueService.send((OcularConnection) connection, recordingRequest, BaseResponse.class);
 
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
-
     }
 
     @Override
@@ -217,33 +181,21 @@ public class OcularServiceImpl implements OcularService {
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName);
             request.setPtzControl(ptzControlDto);
             BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-            if (response.isSuccess()) {
-                return;
-            }
-            //TODO exceptions
-            throw new Exception(response.getErrorDescription());
+
         }
         if (horizontal != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, horizontal);
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName);
             request.setPtzControl(ptzControlDto);
             BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-            if (response.isSuccess()) {
-                return;
-            }
-            //TODO exceptions
-            throw new Exception(response.getErrorDescription());
+
         }
         if (zoom != 0) {
             PtzControlDto ptzControlDto = new PtzControlDto(cameraId, zoom);
             PtzControlRequest request = new PtzControlRequest(UUID.randomUUID(), serverName);
             request.setPtzControl(ptzControlDto);
             BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-            if (response.isSuccess()) {
-                return;
-            }
-            //TODO exceptions
-            throw new Exception(response.getErrorDescription());
+
         }
     }
 
@@ -254,10 +206,6 @@ public class OcularServiceImpl implements OcularService {
 
         StorageListRequest storageRequest = new StorageListRequest(UUID.randomUUID(), serverName);
         StorageListResponse storageListResponse = queueService.send((OcularConnection) connection, storageRequest, StorageListResponse.class);
-        if (!storageListResponse.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(storageListResponse.getErrorDescription());
-        }
 
         List<Storage> storages = new ArrayList<>();
         for (StorageDto dto : storageListResponse.getData()) {
@@ -281,11 +229,6 @@ public class OcularServiceImpl implements OcularService {
         addStorageRequest.setStorageDto(storageDto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, addStorageRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -301,11 +244,6 @@ public class OcularServiceImpl implements OcularService {
         storageRequest.setStorageDto(storageDto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -317,11 +255,6 @@ public class OcularServiceImpl implements OcularService {
         storageRequest.setStorageId(storageId);
 
         BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -333,15 +266,10 @@ public class OcularServiceImpl implements OcularService {
         dto.setType("weekdays");
         dto.setWeekDays(weekDays);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -354,15 +282,10 @@ public class OcularServiceImpl implements OcularService {
         dto.setStartTimestamp(startTimestamp);
         dto.setStartTimestamp(stopTimestamp);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -375,19 +298,14 @@ public class OcularServiceImpl implements OcularService {
         dto.setStartTime(startTime);
         dto.setStartTime(stopTime);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception {
+    public void updateSchedule(Connection connection, String serverName, int scheduleId, List<Integer> weekDays) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -395,19 +313,15 @@ public class OcularServiceImpl implements OcularService {
         dto.setType("weekdays");
         dto.setWeekDays(weekDays);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        UpdateScheduleRequest request = new UpdateScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
+        request.setScheduleId(scheduleId);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception {
+    public void updateSchedule(Connection connection, String serverName, int scheduleId, int startTimestamp, int stopTimestamp) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -416,19 +330,15 @@ public class OcularServiceImpl implements OcularService {
         dto.setStartTimestamp(startTimestamp);
         dto.setStartTimestamp(stopTimestamp);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        UpdateScheduleRequest request = new UpdateScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
+        request.setScheduleId(scheduleId);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception {
+    public void updateSchedule(Connection connection, String serverName, int scheduleId, String startTime, String stopTime) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
@@ -437,15 +347,11 @@ public class OcularServiceImpl implements OcularService {
         dto.setStartTime(startTime);
         dto.setStartTime(stopTime);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
+        UpdateScheduleRequest request = new UpdateScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
+        request.setScheduleId(scheduleId);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -453,15 +359,10 @@ public class OcularServiceImpl implements OcularService {
         checkConnection(connection);
         checkServerName(serverName);
 
-        ScheduleRequest request = new ScheduleRequest(UUID.randomUUID(), serverName);
-        request.setScheduleId(scheduleId);
+        AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
+//        request.setScheduleId(scheduleId);
 
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -477,10 +378,6 @@ public class OcularServiceImpl implements OcularService {
         request.setSkip(skip);
 
         RecordListResponse recordListResponse = queueService.send((OcularConnection) connection, request, RecordListResponse.class);
-        if (!recordListResponse.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(recordListResponse.getErrorDescription());
-        }
 
         List<Record> records = new ArrayList<>();
         for (RecordDto dto : recordListResponse.getData()) {
@@ -498,24 +395,44 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public List<Schedule> getScheduleList(Connection connection, String serverName) throws Exception {
+    public Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(Connection connection, String serverName) throws Exception {
         checkConnection(connection);
         checkServerName(serverName);
 
         ScheduleListRequest baseRequest = new ScheduleListRequest(UUID.randomUUID(), serverName);
         ScheduleListResponse scheduleListResponse = queueService.send((OcularConnection) connection, baseRequest, ScheduleListResponse.class);
-        if (!scheduleListResponse.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(scheduleListResponse.getErrorDescription());
-        }
-        List<Schedule> scheduleList = new ArrayList<>();
-        for (ScheduleDto dto : scheduleListResponse.getData()) {
-            Schedule schedule = convertSchedule(dto);
+        Map<ScheduleTypeEnum,List<Schedule>> scheduleMap = new HashMap<>();
 
-            scheduleList.add(schedule);
-        }
+       List<Schedule> weekdays = scheduleListResponse.getData().get("weekdays").stream().map(scheduleDto -> {
+           Schedule schedule = new Schedule();
+           schedule.setId(scheduleDto.getId());
+           schedule.setType(ScheduleTypeEnum.WEEKDAYS);
+           schedule.setWeekDays(scheduleDto.getWeekDays());
+           return schedule;
+       }).collect(Collectors.toList());
+       scheduleMap.put(ScheduleTypeEnum.WEEKDAYS, weekdays);
 
-        return scheduleList;
+        List<Schedule> timestamp = scheduleListResponse.getData().get("timestamp").stream().map(scheduleDto -> {
+            Schedule schedule = new Schedule();
+            schedule.setId(scheduleDto.getId());
+            schedule.setType(ScheduleTypeEnum.TIMESTAMP);
+            schedule.setStartTimestamp(scheduleDto.getStartTimestamp());
+            schedule.setStopTimestamp(scheduleDto.getStopTimestamp());
+            return schedule;
+        }).collect(Collectors.toList());
+        scheduleMap.put(ScheduleTypeEnum.TIMESTAMP, timestamp);
+
+        List<Schedule> timePeriod = scheduleListResponse.getData().get("time_period").stream().map(scheduleDto -> {
+            Schedule schedule = new Schedule();
+            schedule.setId(scheduleDto.getId());
+            schedule.setType(ScheduleTypeEnum.TIMEPERIOD);
+            schedule.setStartTime(scheduleDto.getStartTime());
+            schedule.setStopTime(scheduleDto.getStopTime());
+            return schedule;
+        }).collect(Collectors.toList());
+        scheduleMap.put(ScheduleTypeEnum.TIMESTAMP, timePeriod);
+
+        return scheduleMap;
     }
 
     @Override
@@ -525,10 +442,6 @@ public class OcularServiceImpl implements OcularService {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
         OrganizationListDto organizationListDto = queueService.send((OcularConnection) connection, baseRequest, OrganizationListDto.class);
-        if (!organizationListDto.isSuccess()) {
-            //TODO exceptions
-            throw new Exception(organizationListDto.getErrorDescription());
-        }
         List<Organization> organizations = new ArrayList<>();
         for (OrganizationDto dto : organizationListDto.getOrganizations()) {
             Organization organization = new Organization();
@@ -580,11 +493,6 @@ public class OcularServiceImpl implements OcularService {
         ConfigImportRequest request = new ConfigImportRequest(UUID.randomUUID(), serverName);
         request.setOrganizations(organizations);
         BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
-        if (response.isSuccess()) {
-            return;
-        }
-        //TODO exceptions
-        throw new Exception(response.getErrorDescription());
     }
 
     @Override
@@ -635,7 +543,7 @@ public class OcularServiceImpl implements OcularService {
     private Schedule convertSchedule(ScheduleDto scheduleDto) {
         Schedule schedule = new Schedule();
         schedule.setId(scheduleDto.getId());
-        schedule.setType(scheduleDto.getType());
+//        schedule.setType(scheduleDto.getType());
         schedule.setWeekDays(scheduleDto.getWeekDays());
         schedule.setStartTime(scheduleDto.getStartTime());
         schedule.setStopTime(scheduleDto.getStopTime());

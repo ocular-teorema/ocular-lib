@@ -5,6 +5,7 @@ import ru.ddg.stalt.ocular.lib.model.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public interface OcularService {
@@ -191,32 +192,35 @@ public interface OcularService {
      *
      * @param connection объект соединения
      * @param serverName имя сервера
+     * @param scheduleId идентификатор расписания
      * @param weekDays   массив дней недели (1-7), в которые камера включена
      * @throws Exception ошибка обновления расписания
      */
-    void updateSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception;
+    void updateSchedule(Connection connection, String serverName, int scheduleId, List<Integer> weekDays) throws Exception;
 
     /**
      * Оббновляет расписание, основываясь на времени Unix (Unix timestamp)
      *
      * @param connection     объект соединения
      * @param serverName     имя сервера
+     * @param scheduleId идентификатор расписания
      * @param startTimestamp начало планирования
      * @param stopTimestamp  завершение
      * @throws Exception ошибка обновления расписания
      */
-    void updateSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception;
+    void updateSchedule(Connection connection, String serverName, int scheduleId, int startTimestamp, int stopTimestamp) throws Exception;
 
     /**
      * Обновляет расписание включения камеры, в заданный интервал времени.
      *
      * @param connection объект соединения
      * @param serverName имя сервера
+     * @param scheduleId идентификатор расписания
      * @param startTime  начало планирования (час, минута и секунда HH-MM-SS)
      * @param stopTime   завершение (час, минута и секунда HH-MM-SS)
      * @throws Exception ошибка обновления расписания
      */
-    void updateSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception;
+    void updateSchedule(Connection connection, String serverName, int scheduleId, String startTime, String stopTime) throws Exception;
 
     /**
      * Удаляет расписание.
@@ -256,7 +260,7 @@ public interface OcularService {
      * @param serverName имя сервера
      * @return список расписаний List<Schedule>
      */
-    List<Schedule> getScheduleList(Connection connection, String serverName) throws Exception;
+    Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(Connection connection, String serverName) throws Exception;
 
     /**
      * Возвращает данные конфигурации

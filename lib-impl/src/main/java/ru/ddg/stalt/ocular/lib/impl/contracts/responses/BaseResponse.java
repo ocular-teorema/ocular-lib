@@ -17,9 +17,11 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = RecordListResponse.class, name = "archive_video"),
         @JsonSubTypes.Type(value = CameraListResponse.class, name = "cameras_list_response"),
         @JsonSubTypes.Type(value = StorageListResponse.class, name = "storage_list"),
-        @JsonSubTypes.Type(value = ScheduleListResponse.class, name = "schedule_list"),
+        @JsonSubTypes.Type(value = ScheduleListResponse.class, name = "schedules_list_response"),
         @JsonSubTypes.Type(value = OrganizationListDto.class, name = "config_export"),
         @JsonSubTypes.Type(value = RecordResponse.class, name = "archive_video"),
+        @JsonSubTypes.Type(value = AddCameraResponse.class, name = "cameras_add"),
+        @JsonSubTypes.Type(value = CameraRecordingResponse.class, name = "cameras_set_recording"),
         @JsonSubTypes.Type(value = ErrorResponse.class, name = "error")
 })
 public class BaseResponse<T> {

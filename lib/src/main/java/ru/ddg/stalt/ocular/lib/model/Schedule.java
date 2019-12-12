@@ -16,7 +16,7 @@ public class Schedule {
 
     private int id;
 
-    private String type;
+    private ScheduleTypeEnum type;
 
     private List<Integer> weekDays;
 
