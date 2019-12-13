@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ddg.stalt.ocular.lib.exceptions.ResponseTimeoutException;
@@ -56,7 +57,7 @@ public class QueueService {
     public <T extends BaseResponse> T innerSend(OcularConnection ocularConnection, BaseRequest request, Class<T> responseClass) throws IOException, ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         try {
-            requestRegistry.register(request.getUuid(), completableFuture, responseClass);
+            requestRegistry.register(request.getUuid(), completableFuture, responseClass, request.getClass());
         }
         catch (DuplicateRequestException e) {
             throw new IllegalArgumentException("request has contain unique UUID.", e);
