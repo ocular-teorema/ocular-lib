@@ -1,10 +1,10 @@
 package ru.ddg.stalt.ocular.lib.impl.services;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.ddg.stalt.ocular.lib.exceptions.DuplicateDriverIdException;
 import ru.ddg.stalt.ocular.lib.exceptions.IncorrectServerNameException;
-import ru.ddg.stalt.ocular.lib.exceptions.WrongConnectionException;
 import ru.ddg.stalt.ocular.lib.impl.contracts.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.requests.*;
 import ru.ddg.stalt.ocular.lib.impl.contracts.responses.*;
@@ -40,8 +40,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public ServerState getServerState(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public ServerState getServerState(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
 
         ServerStatusRequest stateRequest = new ServerStatusRequest(UUID.randomUUID(), serverName);
@@ -84,16 +83,14 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void resetServer(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public void resetServer(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
         ResetServerRequest resetRequest = new ResetServerRequest(UUID.randomUUID(), serverName);
 
         BaseResponse response = queueService.send((OcularConnection) connection, resetRequest, BaseResponse.class);
     }
 
-    public void addCamera(Connection connection, Camera camera, String serverName) throws Exception {
-        checkConnection(connection);
+    public void addCamera(@NonNull Connection connection, Camera camera, String serverName) throws Exception {
         checkServerName(serverName);
 
         CameraDto cameraDto = new CameraDto();
@@ -112,8 +109,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void removeCamera(Connection connection, String serverName, String cameraId) throws Exception {
-        checkConnection(connection);
+    public void removeCamera(@NonNull Connection connection, String serverName, String cameraId) throws Exception {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
@@ -121,20 +117,24 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateCamera(Connection connection, String serverName, Camera camera) throws Exception {
-        checkConnection(connection);
+    public void updateCamera(@NonNull Connection connection, String serverName, Camera camera) throws Exception {
         checkServerName(serverName);
 
         UpdateCameraRequest request = new UpdateCameraRequest(UUID.randomUUID(), serverName);
         request.setCameraId(camera.getCameraId());
 
         CameraDto dto = new CameraDto();
+        dto.setCameraId(camera.getCameraId());
         dto.setName(camera.getName());
         dto.setPrimaryAddress(camera.getPrimaryAddress());
         dto.setSecondaryAddress(camera.getSecondaryAddress());
-        dto.setAnalysisType(camera.getAnalysisType());
+        dto.setStatus(camera.getStatus());
+        dto.setStreamAddress(camera.getStreamAddress());
+        dto.setIsRecording(camera.isEnabled());
         dto.setStorageDays(camera.getStorageDays());
+        dto.setAnalysisType(camera.getAnalysisType());
         dto.setStorageId(camera.getStorageId());
+
         dto.setScheduleId(camera.getScheduleId());
 
         request.setCamera(dto);
@@ -143,8 +143,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public List<Camera> getCameraList(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public List<Camera> getCameraList(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
 
         CameraListRequest baseRequest = new CameraListRequest(UUID.randomUUID(), serverName);
@@ -159,8 +158,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void setRecording(Connection connection, String serverName, Camera camera, boolean isRecording) throws Exception {
-        checkConnection(connection);
+    public void setRecording(@NonNull Connection connection, String serverName, Camera camera, boolean isRecording) throws Exception {
         checkServerName(serverName);
         RecordingRequest recordingRequest = new RecordingRequest(UUID.randomUUID(), serverName);
         recordingRequest.setCameraId(camera.getCameraId());
@@ -170,8 +168,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void ptzControl(Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws Exception {
-        checkConnection(connection);
+    public void ptzControl(@NonNull Connection connection, String serverName, String cameraId, int vertical, int horizontal, int zoom) throws Exception {
         checkServerName(serverName);
 
         if (vertical != 0) {
@@ -198,8 +195,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public List<Storage> getStorageList(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public List<Storage> getStorageList(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
 
         StorageListRequest storageRequest = new StorageListRequest(UUID.randomUUID(), serverName);
@@ -216,8 +212,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void addStorage(Connection connection, String serverName, String storageName, String storagePath) throws Exception {
-        checkConnection(connection);
+    public void addStorage(@NonNull Connection connection, String serverName, String storageName, String storagePath) throws Exception {
         checkServerName(serverName);
 
         StorageDto storageDto = new StorageDto();
@@ -230,8 +225,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception {
-        checkConnection(connection);
+    public void updateStorage(@NonNull Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception {
         checkServerName(serverName);
 
         StorageDto storageDto = new StorageDto();
@@ -245,8 +239,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void deleteStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception {
-        checkConnection(connection);
+    public void deleteStorage(@NonNull Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception {
         checkServerName(serverName);
 
         StorageRequest storageRequest = new StorageRequest(UUID.randomUUID(), serverName);
@@ -256,8 +249,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void addSchedule(Connection connection, String serverName, List<Integer> weekDays) throws Exception {
-        checkConnection(connection);
+    public void addSchedule(@NonNull Connection connection, String serverName, List<Integer> weekDays) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -271,8 +263,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void addSchedule(Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception {
-        checkConnection(connection);
+    public void addSchedule(@NonNull Connection connection, String serverName, int startTimestamp, int stopTimestamp) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -287,8 +278,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void addSchedule(Connection connection, String serverName, String startTime, String stopTime) throws Exception {
-        checkConnection(connection);
+    public void addSchedule(@NonNull Connection connection, String serverName, String startTime, String stopTime) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -303,8 +293,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, int scheduleId, List<Integer> weekDays) throws Exception {
-        checkConnection(connection);
+    public void updateSchedule(@NonNull Connection connection, String serverName, int scheduleId, List<Integer> weekDays) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -319,8 +308,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, int scheduleId, int startTimestamp, int stopTimestamp) throws Exception {
-        checkConnection(connection);
+    public void updateSchedule(@NonNull Connection connection, String serverName, int scheduleId, int startTimestamp, int stopTimestamp) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -336,8 +324,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateSchedule(Connection connection, String serverName, int scheduleId, String startTime, String stopTime) throws Exception {
-        checkConnection(connection);
+    public void updateSchedule(@NonNull Connection connection, String serverName, int scheduleId, String startTime, String stopTime) throws Exception {
         checkServerName(serverName);
 
         ScheduleDto dto = new ScheduleDto();
@@ -353,8 +340,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void deleteSchedule(Connection connection, String serverName, int scheduleId) throws Exception {
-        checkConnection(connection);
+    public void deleteSchedule(@NonNull Connection connection, String serverName, int scheduleId) throws Exception {
         checkServerName(serverName);
 
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
@@ -364,8 +350,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public List<Record> getVideoArchive(Connection connection, String serverName, Integer startTimestamp, Integer stopTimestamp, List<String> cameras, Integer skip, Integer limit) throws Exception {
-        checkConnection(connection);
+    public List<Record> getVideoArchive(@NonNull Connection connection, String serverName, Integer startTimestamp, Integer stopTimestamp, List<String> cameras, Integer skip, Integer limit) throws Exception {
         checkServerName(serverName);
 
         ArchiveRecordRequest request = new ArchiveRecordRequest(UUID.randomUUID(), serverName);
@@ -393,8 +378,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
 
         ScheduleListRequest baseRequest = new ScheduleListRequest(UUID.randomUUID(), serverName);
@@ -434,8 +418,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public List<Organization> exportConfig(Connection connection, String serverName) throws Exception {
-        checkConnection(connection);
+    public List<Organization> exportConfig(@NonNull Connection connection, String serverName) throws Exception {
         checkServerName(serverName);
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
@@ -484,8 +467,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void importConfig(Connection connection, String serverName, List<Organization> organizations) throws Exception {
-        checkConnection(connection);
+    public void importConfig(@NonNull Connection connection, String serverName, List<Organization> organizations) throws Exception {
         checkServerName(serverName);
 
         ConfigImportRequest request = new ConfigImportRequest(UUID.randomUUID(), serverName);
@@ -496,15 +478,6 @@ public class OcularServiceImpl implements OcularService {
     @Override
     public EventHandler setEventHandler(Connection connection, EventHandler eventHandler) {
         return ((OcularConnection)connection).getEventHandler().getAndSet(eventHandler);
-    }
-
-    private void checkConnection(Connection connection) throws WrongConnectionException {
-        if (connection == null) {
-            throw new WrongConnectionException("Wrong connection");
-        }
-        if (!(connection instanceof OcularConnection)) {
-            throw new WrongConnectionException("Wrong connection");
-        }
     }
 
     private void checkServerName(String serverName) throws IncorrectServerNameException {
