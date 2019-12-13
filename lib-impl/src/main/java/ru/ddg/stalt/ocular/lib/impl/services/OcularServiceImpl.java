@@ -85,7 +85,7 @@ public class OcularServiceImpl implements OcularService {
 
         ResetServerRequest resetRequest = new ResetServerRequest(UUID.randomUUID(), serverName);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, resetRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, resetRequest, BaseResponse.class);
     }
 
     public void addCamera(@NonNull Connection connection, Camera camera, @NonNull String serverName) throws Exception {
@@ -102,14 +102,14 @@ public class OcularServiceImpl implements OcularService {
         AddCameraRequest addCameraRequest = new AddCameraRequest(UUID.randomUUID(), serverName);
         addCameraRequest.setData(cameraDto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, addCameraRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, addCameraRequest, BaseResponse.class);
     }
 
     @Override
     public void removeCamera(@NonNull Connection connection, @NonNull String serverName, String cameraId) throws Exception {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
-        BaseResponse response = queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class OcularServiceImpl implements OcularService {
 
         request.setCamera(dto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class OcularServiceImpl implements OcularService {
         RecordingRequest recordingRequest = new RecordingRequest(UUID.randomUUID(), serverName);
         recordingRequest.setCameraId(camera.getCameraId());
         recordingRequest.setIsRecording(isRecording);
-        BaseResponse response = queueService.send((OcularConnection) connection, recordingRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, recordingRequest, BaseResponse.class);
 
     }
 
@@ -212,7 +212,7 @@ public class OcularServiceImpl implements OcularService {
         StorageRequest addStorageRequest = new StorageRequest(UUID.randomUUID(), serverName);
         addStorageRequest.setStorageDto(storageDto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, addStorageRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, addStorageRequest, BaseResponse.class);
     }
 
     @Override
@@ -225,7 +225,7 @@ public class OcularServiceImpl implements OcularService {
         storageRequest.setStorageId(storageId);
         storageRequest.setStorageDto(storageDto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
     }
 
     @Override
@@ -234,7 +234,7 @@ public class OcularServiceImpl implements OcularService {
         StorageRequest storageRequest = new StorageRequest(UUID.randomUUID(), serverName);
         storageRequest.setStorageId(storageId);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
     }
 
     @Override
@@ -247,7 +247,7 @@ public class OcularServiceImpl implements OcularService {
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class OcularServiceImpl implements OcularService {
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -275,7 +275,7 @@ public class OcularServiceImpl implements OcularService {
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
         request.setScheduleDto(dto);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class OcularServiceImpl implements OcularService {
         request.setScheduleDto(dto);
         request.setScheduleId(scheduleId);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -304,7 +304,7 @@ public class OcularServiceImpl implements OcularService {
         request.setScheduleDto(dto);
         request.setScheduleId(scheduleId);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -319,7 +319,7 @@ public class OcularServiceImpl implements OcularService {
         request.setScheduleDto(dto);
         request.setScheduleId(scheduleId);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -328,7 +328,7 @@ public class OcularServiceImpl implements OcularService {
         AddScheduleRequest request = new AddScheduleRequest(UUID.randomUUID(), serverName);
 //        request.setScheduleId(scheduleId);
 
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
@@ -449,7 +449,7 @@ public class OcularServiceImpl implements OcularService {
     public void importConfig(@NonNull Connection connection, @NonNull String serverName, List<Organization> organizations) throws Exception {
         ConfigImportRequest request = new ConfigImportRequest(UUID.randomUUID(), serverName);
         request.setOrganizations(organizations);
-        BaseResponse response = queueService.send((OcularConnection) connection, request, BaseResponse.class);
+        queueService.send((OcularConnection) connection, request, BaseResponse.class);
     }
 
     @Override
