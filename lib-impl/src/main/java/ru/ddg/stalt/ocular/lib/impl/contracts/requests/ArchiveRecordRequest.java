@@ -13,6 +13,7 @@ import java.util.UUID;
 @Setter
 public class ArchiveRecordRequest extends BaseRequest {
 
+    @JsonProperty("cameras")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> cameraIds;
 

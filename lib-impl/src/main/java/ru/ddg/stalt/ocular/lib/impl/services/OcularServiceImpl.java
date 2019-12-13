@@ -108,8 +108,9 @@ public class OcularServiceImpl implements OcularService {
     @Override
     public void removeCamera(@NonNull Connection connection, @NonNull String serverName, String cameraId) throws Exception {
 
-        BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
-        queueService.send((OcularConnection) connection, baseRequest, BaseResponse.class);
+        DeleteCameraRrequest deleteCameraRrequest = new DeleteCameraRrequest(UUID.randomUUID(), serverName);
+        deleteCameraRrequest.setCameraId(cameraId);
+        queueService.send((OcularConnection) connection, deleteCameraRrequest, DeleteCameraResponse.class);
     }
 
     @Override

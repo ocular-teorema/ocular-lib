@@ -20,6 +20,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = ExportConfigResponse.class, name = "config_export"),
         @JsonSubTypes.Type(value = RecordResponse.class, name = "archive_video"),
         @JsonSubTypes.Type(value = AddCameraResponse.class, name = "cameras_add_response"),
+        @JsonSubTypes.Type(value = DeleteCameraResponse.class, name = "cameras_delete_response"),
         @JsonSubTypes.Type(value = CameraRecordingResponse.class, name = "cameras_set_recording"),
         @JsonSubTypes.Type(value = AddScheduleResponse.class, name = "schedules_add_response"),
         @JsonSubTypes.Type(value = ErrorResponse.class, name = "error")
