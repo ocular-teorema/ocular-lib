@@ -23,6 +23,8 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = DeleteCameraResponse.class, name = "cameras_delete_response"),
         @JsonSubTypes.Type(value = CameraRecordingResponse.class, name = "cameras_set_recording"),
         @JsonSubTypes.Type(value = AddScheduleResponse.class, name = "schedules_add_response"),
+        @JsonSubTypes.Type(value = UpdateStorageResponse.class, name = "storages_update_response"),
+        @JsonSubTypes.Type(value = DeleteCameraResponse.class, name = "storages_delete"),
         @JsonSubTypes.Type(value = ErrorResponse.class, name = "error")
 })
 public class BaseResponse<T> {

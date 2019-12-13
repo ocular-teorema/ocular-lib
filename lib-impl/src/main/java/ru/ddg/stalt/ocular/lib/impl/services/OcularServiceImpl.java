@@ -210,7 +210,7 @@ public class OcularServiceImpl implements OcularService {
         StorageDto storageDto = new StorageDto();
         storageDto.setName(storageName);
         storageDto.setDefaultArchivePath(storagePath);
-        StorageRequest addStorageRequest = new StorageRequest(UUID.randomUUID(), serverName);
+        AddStorageRequest addStorageRequest = new AddStorageRequest(UUID.randomUUID(), serverName);
         addStorageRequest.setStorageDto(storageDto);
 
         queueService.send((OcularConnection) connection, addStorageRequest, BaseResponse.class);
@@ -222,20 +222,20 @@ public class OcularServiceImpl implements OcularService {
         StorageDto storageDto = new StorageDto();
         storageDto.setName(storageName);
         storageDto.setDefaultArchivePath(storagePath);
-        StorageRequest storageRequest = new StorageRequest(UUID.randomUUID(), serverName);
-        storageRequest.setStorageId(storageId);
-        storageRequest.setStorageDto(storageDto);
+        UpdateStorageRequest updateStorageRequest = new UpdateStorageRequest(UUID.randomUUID(), serverName);
+        updateStorageRequest.setStorageId(storageId);
+        updateStorageRequest.setStorageDto(storageDto);
 
-        queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, updateStorageRequest, BaseResponse.class);
     }
 
     @Override
     public void deleteStorage(@NonNull Connection connection, @NonNull String serverName, String storageId, String storageName, String storagePath) throws Exception {
 
-        StorageRequest storageRequest = new StorageRequest(UUID.randomUUID(), serverName);
-        storageRequest.setStorageId(storageId);
+        DeleteStorageRequest deleteStorageRequest = new DeleteStorageRequest(UUID.randomUUID(), serverName);
+        deleteStorageRequest.setStorageId(storageId);
 
-        queueService.send((OcularConnection) connection, storageRequest, BaseResponse.class);
+        queueService.send((OcularConnection) connection, deleteStorageRequest, BaseResponse.class);
     }
 
     @Override

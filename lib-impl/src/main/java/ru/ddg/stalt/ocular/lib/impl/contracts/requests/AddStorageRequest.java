@@ -9,15 +9,12 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class StorageRequest extends BaseRequest {
-
-    @JsonProperty("storage_id")
-    private String storageId;
+public class AddStorageRequest extends BaseRequest {
 
     @JsonProperty("data")
     private StorageDto storageDto;
 
-    public StorageRequest(UUID uuid, String server) {
+    public AddStorageRequest(UUID uuid, String server) {
         super(uuid, server);
     }
 }
