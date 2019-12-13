@@ -10,7 +10,7 @@ import ru.ddg.stalt.ocular.lib.impl.contracts.responses.BaseResponse;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PtzControlDto extends BaseResponse {
+public class PtzControlDto {
 
     @JsonProperty("camera_id")
     @JsonInclude(JsonInclude.Include.NON_NULL)

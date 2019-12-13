@@ -43,20 +43,20 @@ public class OcularServiceImpl implements OcularService {
 
         ServerStatusRequest stateRequest = new ServerStatusRequest(UUID.randomUUID(), serverName);
 
-        ServerStateDto serverStateDto = queueService.send((OcularConnection) connection, stateRequest, ServerStateDto.class);
+        ServerStateResponse serverStateResponse = queueService.send((OcularConnection) connection, stateRequest, ServerStateResponse.class);
 
         ServerHardwareInfo hardwareInfo = new ServerHardwareInfo();
 
-        hardwareInfo.setCpuUtilization(serverStateDto.getHardware().getCpuUtilization());
-        hardwareInfo.setDefaultVideoPath(serverStateDto.getHardware().getDefaultVideoPath());
-        hardwareInfo.setDiscUsage(serverStateDto.getHardware().getDiscUsage());
-        hardwareInfo.setIpAddress(serverStateDto.getHardware().getIpAddress());
-        hardwareInfo.setOcularVersion(serverStateDto.getHardware().getOcularVersion());
-        hardwareInfo.setUptime(serverStateDto.getHardware().getUptime());
-        hardwareInfo.setLoadAverage(serverStateDto.getHardware().getLoadAverage());
+        hardwareInfo.setCpuUtilization(serverStateResponse.getData().getHardware().getCpuUtilization());
+        hardwareInfo.setDefaultVideoPath(serverStateResponse.getData().getHardware().getDefaultVideoPath());
+        hardwareInfo.setDiscUsage(serverStateResponse.getData().getHardware().getDiscUsage());
+        hardwareInfo.setIpAddress(serverStateResponse.getData().getHardware().getIpAddress());
+        hardwareInfo.setOcularVersion(serverStateResponse.getData().getHardware().getOcularVersion());
+        hardwareInfo.setUptime(serverStateResponse.getData().getHardware().getUptime());
+        hardwareInfo.setLoadAverage(serverStateResponse.getData().getHardware().getLoadAverage());
 
         List<ServiceState> services = new ArrayList<>();
-        for (ServiceStateDto dto : serverStateDto.getServices()) {
+        for (ServiceStateDto dto : serverStateResponse.getData().getServices()) {
             ServiceState serviceState = new ServiceState();
             serviceState.setName(dto.getName());
             serviceState.setStatus(dto.getStatus());
@@ -67,7 +67,7 @@ public class OcularServiceImpl implements OcularService {
         }
 
         List<CameraState> cameraStates = new ArrayList<>();
-        for (CameraStateDto stateDto : serverStateDto.getCameras()) {
+        for (CameraStateDto stateDto : serverStateResponse.getData().getCameras()) {
             CameraState cameraState = new CameraState();
             cameraState.setCameraId(stateDto.getCameraId());
             cameraState.setStatus(stateDto.getStatus());
@@ -401,9 +401,9 @@ public class OcularServiceImpl implements OcularService {
     public List<Organization> exportConfig(@NonNull Connection connection, @NonNull String serverName) throws Exception {
 
         BaseRequest baseRequest = new BaseRequest(UUID.randomUUID(), serverName);
-        OrganizationListDto organizationListDto = queueService.send((OcularConnection) connection, baseRequest, OrganizationListDto.class);
+        ExportConfigResponse organizationListDto = queueService.send((OcularConnection) connection, baseRequest, ExportConfigResponse.class);
         List<Organization> organizations = new ArrayList<>();
-        for (OrganizationDto dto : organizationListDto.getOrganizations()) {
+        for (OrganizationDto dto : organizationListDto.getData()) {
             Organization organization = new Organization();
             organization.setName(dto.getName());
 

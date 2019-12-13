@@ -24,6 +24,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = RecordingRequest.class, name = "cameras_set_recording"),
         @JsonSubTypes.Type(value = AddScheduleRequest.class, name = "schedules_add"),
         @JsonSubTypes.Type(value = UpdateScheduleRequest.class, name = "schedules_update"),
+        @JsonSubTypes.Type(value = ExportConfigRequest.class, name = "config_export"),
         @JsonSubTypes.Type(value = UpdateCameraRequest.class, name = "cameras_update")
 })
 public class BaseRequest {

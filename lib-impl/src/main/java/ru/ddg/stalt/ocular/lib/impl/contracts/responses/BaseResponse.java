@@ -5,22 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
-import ru.ddg.stalt.ocular.lib.impl.contracts.OrganizationListDto;
-import ru.ddg.stalt.ocular.lib.impl.contracts.ServerStateDto;
 
 import java.util.UUID;
 
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ServerStateDto.class, name = "status"),
+        @JsonSubTypes.Type(value = ServerStateResponse.class, name = "status_response"),
         @JsonSubTypes.Type(value = RecordListResponse.class, name = "archive_video"),
         @JsonSubTypes.Type(value = CameraListResponse.class, name = "cameras_list_response"),
         @JsonSubTypes.Type(value = StorageListResponse.class, name = "storage_list"),
         @JsonSubTypes.Type(value = ScheduleListResponse.class, name = "schedules_list_response"),
-        @JsonSubTypes.Type(value = OrganizationListDto.class, name = "config_export"),
+        @JsonSubTypes.Type(value = ExportConfigResponse.class, name = "config_export"),
         @JsonSubTypes.Type(value = RecordResponse.class, name = "archive_video"),
-        @JsonSubTypes.Type(value = AddCameraResponse.class, name = "cameras_add"),
+        @JsonSubTypes.Type(value = AddCameraResponse.class, name = "cameras_add_response"),
         @JsonSubTypes.Type(value = CameraRecordingResponse.class, name = "cameras_set_recording"),
         @JsonSubTypes.Type(value = AddScheduleResponse.class, name = "schedules_add_response"),
         @JsonSubTypes.Type(value = ErrorResponse.class, name = "error")

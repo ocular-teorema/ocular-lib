@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class OrganizationDto extends BaseResponse {
+public class OrganizationDto {
 
     private String name;
 
