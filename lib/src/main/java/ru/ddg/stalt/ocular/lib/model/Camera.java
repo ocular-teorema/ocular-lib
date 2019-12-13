@@ -32,5 +32,7 @@ public class Camera {
 
     private CameraStatusEnum status;
 
+    private boolean isEnabled;
+
     private Integer storageDays;
 }
