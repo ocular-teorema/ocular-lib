@@ -12,6 +12,6 @@ public class StorageDto {
 
     private String name;
 
-    @JsonProperty("default_archive_path")
+    @JsonProperty("path")
     private String defaultArchivePath;
 }

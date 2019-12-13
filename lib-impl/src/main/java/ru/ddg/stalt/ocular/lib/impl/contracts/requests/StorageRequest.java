@@ -14,6 +14,7 @@ public class StorageRequest extends BaseRequest {
     @JsonProperty("storage_id")
     private String storageId;
 
+    @JsonProperty("data")
     private StorageDto storageDto;
 
     public StorageRequest(UUID uuid, String server) {
