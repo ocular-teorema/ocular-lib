@@ -28,7 +28,7 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        try (Connection connection = ocularService.connect("78.1.2.3", 1234, "test", "test", 3000, )) {
+        try (Connection connection = ocularService.connect("78.1.2.3", 1234, "test", "test", 3000, "1")) {
             ocularService.getCameraList(connection, "test");
         }
     }
