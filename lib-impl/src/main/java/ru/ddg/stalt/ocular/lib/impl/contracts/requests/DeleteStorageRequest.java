@@ -9,7 +9,7 @@ import java.util.UUID;
 public class DeleteStorageRequest extends BaseRequest {
 
     @JsonProperty("storage_id")
-    private String storageId;
+    private int storageId;
 
     public DeleteStorageRequest(UUID uuid, String server) {
         super(uuid, server);

@@ -217,7 +217,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void updateStorage(@NonNull Connection connection, @NonNull String serverName, String storageId, String storageName, String storagePath) throws Exception {
+    public void updateStorage(@NonNull Connection connection, @NonNull String serverName, int storageId, String storageName, String storagePath) throws Exception {
 
         StorageDto storageDto = new StorageDto();
         storageDto.setName(storageName);
@@ -230,7 +230,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public void deleteStorage(@NonNull Connection connection, @NonNull String serverName, String storageId, String storageName, String storagePath) throws Exception {
+    public void deleteStorage(@NonNull Connection connection, @NonNull String serverName, int storageId) throws Exception {
 
         DeleteStorageRequest deleteStorageRequest = new DeleteStorageRequest(UUID.randomUUID(), serverName);
         deleteStorageRequest.setStorageId(storageId);
@@ -360,7 +360,7 @@ public class OcularServiceImpl implements OcularService {
     }
 
     @Override
-    public Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(@NonNull Connection connection, @NonNull String serverName) throws Exception {
+    public Map<ScheduleTypeEnum,List<Schedule>> getSchedules(@NonNull Connection connection, @NonNull String serverName) throws Exception {
 
         ScheduleListRequest baseRequest = new ScheduleListRequest(UUID.randomUUID(), serverName);
         ScheduleListResponse scheduleListResponse = queueService.send((OcularConnection) connection, baseRequest, ScheduleListResponse.class);

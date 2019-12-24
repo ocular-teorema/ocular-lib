@@ -11,7 +11,7 @@ import java.util.UUID;
 public class UpdateStorageRequest extends BaseRequest {
 
     @JsonProperty("storage_id")
-    private String storageId;
+    private Integer storageId;
 
     @JsonProperty("data")
     private StorageDto storageDto;

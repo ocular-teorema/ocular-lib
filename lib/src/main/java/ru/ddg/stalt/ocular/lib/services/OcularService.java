@@ -142,7 +142,7 @@ public interface OcularService {
      * @param storagePath адрес пути
      * @throws Exception ошибка обновления хранилища
      */
-    void updateStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception;
+    void updateStorage(Connection connection, String serverName, int storageId, String storageName, String storagePath) throws Exception;
 
     /**
      * Удаляет хранилище
@@ -150,11 +150,9 @@ public interface OcularService {
      * @param connection  объект соединения
      * @param serverName  имя сервера
      * @param storageId   идентификатор хранилища
-     * @param storageName имя хранилища
-     * @param storagePath адрес пути
      * @throws Exception ошибка удаления хранилища
      */
-    void deleteStorage(Connection connection, String serverName, String storageId, String storageName, String storagePath) throws Exception;
+    void deleteStorage(Connection connection, String serverName, int storageId) throws Exception;
 
     /**
      * Добавляет новое расписание включения камеры, основываясь на днях недели
@@ -259,9 +257,9 @@ public interface OcularService {
      *
      * @param connection объект соединения
      * @param serverName имя сервера
-     * @return список расписаний List<Schedule>
+     * @return коллекция расписаний Map<ScheduleTypeEnum,List<Schedule>>
      */
-    Map<ScheduleTypeEnum,List<Schedule>> getScheduleList(Connection connection, String serverName) throws Exception;
+    Map<ScheduleTypeEnum,List<Schedule>> getSchedules(Connection connection, String serverName) throws Exception;
 
     /**
      * Возвращает данные конфигурации
@@ -286,7 +284,7 @@ public interface OcularService {
      * Устанавливает обработчик событий для заданного содеинения.
      *
      * @param connection   объект соединения
-     * @param eventHandler новый обработчик осбытия
+     * @param eventHandler новый обработчик события
      * @return старый обработчик события или null
      */
     EventHandler setEventHandler(Connection connection, EventHandler eventHandler);
